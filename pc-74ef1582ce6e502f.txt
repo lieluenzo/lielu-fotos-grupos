@@ -1,0 +1,1189 @@
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* ========================================================================
+   Lielu · Funil "Prata da Casa" — v1 (18/11/2026)
+   Mesma marca e mesmas peças do Tipo de Viajante V2 (#tv), com prefixo #pc.
+   - celular primeiro; corpo 18 px; botões e campos com 64 px ou mais;
+   - sem vermelho (erro em tom de sol);
+   - movimento só com .pc-anim (o JS põe); prefers-reduced-motion deixa tudo parado;
+   - sem inset, aspect-ratio nem gap de flex (Android antigo).
+   ======================================================================== */
+
+/* 1. ARMADURA (fecha o que o tema do site mexe) */
+html{overflow-x:hidden}
+@supports (overflow:clip){html,body{overflow-x:clip}}
+#pc{width:var(--lp-vw,100vw);max-width:var(--lp-vw,100vw);margin:0 calc(50% - var(--lp-vw,100vw)/2);position:relative;isolation:isolate}
+#pc :where(*,*::before,*::after){box-sizing:border-box}
+#pc :where(*){font-family:inherit;letter-spacing:normal;text-transform:none;text-decoration:none;text-shadow:none;float:none;min-height:0;white-space:normal;user-select:auto}
+#pc :where(div,section,header,footer,article,aside,figure,form,nav,fieldset,main){margin:0;padding:0;border:0;background:none;box-shadow:none;min-width:0}
+#pc :where(h1,h2,h3,h4,h5,h6,p,ul,ol,li,small,span,strong,em,label,b,i){margin:0;padding:0}
+#pc :where(ul,ol){list-style:none}
+#pc :where(li)::marker{content:""}
+#pc :where(a){color:inherit;background:none;border:0;box-shadow:none}
+#pc :where(img,svg){display:block;max-width:100%;height:auto;margin:0;border:0;border-radius:0;box-shadow:none}
+#pc :where(svg){fill:none;vertical-align:middle;overflow:visible}
+#pc :where(button,input){font:inherit;color:inherit;background:none;border:0;margin:0;padding:0;border-radius:0;box-shadow:none;-webkit-appearance:none;appearance:none;min-width:0;outline:none}
+#pc :where(strong,b){font-weight:700}
+#pc :where([hidden]){display:none!important}
+
+/* 2. FICHAS */
+#pc{
+  --indigo-950:#120F29;--indigo-900:#221D44;--indigo-800:#342C60;--indigo-600:#5C4DB2;--indigo-400:#8F82E0;
+  --lavanda:#B4ADEB;--sol:#FABF21;--sol-300:#FFDA79;--areia:#F5F1E8;--papel:#FFFFFF;
+  --titulo:'Archivo','Arial Black',system-ui,sans-serif;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --calha:20px;--alt:100vh;--ease:cubic-bezier(.22,1,.36,1);
+  display:flex;flex-direction:column;min-height:100vh;min-height:var(--alt);
+  font-family:var(--sans);font-size:18px;line-height:1.5;color:#fff;
+  background-color:var(--indigo-950);
+  background-image:radial-gradient(900px 560px at 88% -8%,rgba(92,77,178,.50),rgba(92,77,178,0) 62%),radial-gradient(760px 520px at -12% 108%,rgba(250,191,33,.11),rgba(250,191,33,0) 60%);
+  -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;
+}
+#pc a:focus-visible,#pc button:focus-visible,#pc input:focus-visible{outline:3px solid var(--sol);outline-offset:3px}
+#pc ::selection{background:var(--sol);color:var(--indigo-950)}
+#pc .pc-sprite{position:absolute!important;width:0!important;height:0!important;overflow:hidden}
+#pc .pc-ic{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#pc .pc-ic-wa{width:26px;height:26px;flex:none;fill:currentColor;stroke:none}
+#pc .pc-so-leitor{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* 3. TOPO */
+#pc .pc-topo{position:-webkit-sticky;position:sticky;top:0;z-index:8;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px var(--calha);background:linear-gradient(180deg,rgba(18,15,41,.96) 62%,rgba(18,15,41,0) 100%)}
+#pc .pc-voltar{display:inline-flex;align-items:center;justify-self:start;min-height:48px;padding:0 18px 0 12px;font:600 17px/1 var(--sans);color:#fff;white-space:nowrap;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.30);border-radius:999px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#pc .pc-voltar .pc-ic{margin-right:6px}
+#pc .pc-voltar:hover{background:rgba(255,255,255,.16)}
+#pc .pc-logo{justify-self:center;display:block;line-height:0}
+#pc .pc-logo img{height:44px;width:auto}
+#pc[data-tela="boas-vindas"] .pc-topo{position:absolute;top:0;left:0;right:0;background:none}
+#pc[data-tela="boas-vindas"] .pc-voltar,#pc[data-tela="espera"] .pc-voltar{visibility:hidden}
+
+/* 4. TELAS */
+#pc .pc-palco{flex:1 1 auto;position:relative}
+#pc .pc-tela{width:100%;padding:22px var(--calha) 64px;padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+#pc .pc-q{max-width:640px;margin:0 auto}
+#pc .pc-kicker{display:block;margin-bottom:12px;font:800 14px/1.2 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--sol)}
+#pc .pc-t{font-family:var(--titulo);font-weight:800;font-size:30px;font-size:clamp(30px,7.6vw,40px);line-height:1.1;letter-spacing:-.022em;color:#fff}
+#pc .pc-t:focus{outline:none}
+#pc .pc-t em{font-style:normal;color:var(--sol)}
+#pc .pc-ap{margin-top:14px;font-size:19px;line-height:1.5;color:rgba(255,255,255,.86)}
+
+/* botões */
+#pc .pc-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:64px;padding:12px 26px;border-radius:999px;font:800 17px/1.25 var(--sans);letter-spacing:.05em;text-transform:uppercase;text-align:center;white-space:normal;color:var(--indigo-950);background:var(--sol);box-shadow:0 12px 34px rgba(250,191,33,.30);cursor:pointer;transition:background .2s,transform .22s var(--ease);-webkit-tap-highlight-color:transparent}
+#pc .pc-btn span{text-transform:inherit;letter-spacing:inherit}
+#pc .pc-btn .pc-ic{margin-left:10px;stroke-width:2.8}
+#pc .pc-btn .pc-ic-wa{margin-right:12px}
+#pc .pc-btn:hover{background:var(--sol-300);transform:translateY(-2px)}
+#pc .pc-btn:active{transform:translateY(0) scale(.99)}
+#pc .pc-btn[disabled]{opacity:.6;cursor:default}
+#pc .pc-btn--sec{margin-top:16px;min-height:60px;color:#fff;background:rgba(18,15,41,.64);border:2px solid rgba(255,255,255,.55);box-shadow:none}
+#pc .pc-btn--sec:hover{color:var(--indigo-950);background:var(--sol-300);border-color:var(--sol-300)}
+
+/* 5. BOAS-VINDAS */
+#pc .pc-tela--hero{position:relative;display:flex;flex-direction:column;padding:0;min-height:100vh;min-height:var(--alt)}
+#pc .pc-hero-foto{position:relative;flex:none;overflow:hidden;height:300px;height:calc(var(--alt) - 560px);min-height:230px;max-height:520px}
+#pc .pc-hero-foto img{position:absolute;top:0;left:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:50% 100%}
+#pc .pc-hero-foto::after{content:"";position:absolute;left:0;right:0;bottom:0;height:45%;background:linear-gradient(180deg,rgba(18,15,41,0) 0%,#120F29 100%)}
+#pc .pc-hero-foto::before{content:"";position:absolute;z-index:1;top:0;left:0;right:0;height:140px;background:linear-gradient(180deg,rgba(18,15,41,.72) 0%,rgba(18,15,41,0) 100%)}
+#pc .pc-hero-txt{position:relative;z-index:2;width:100%;max-width:640px;margin:-18px auto 0;padding:0 var(--calha) 44px}
+#pc .pc-hero-txt .pc-t{font-size:32px;font-size:clamp(30px,8.4vw,42px);line-height:1.06}
+#pc .pc-campo{position:relative;margin-top:22px}
+#pc .pc-campo label{display:block;margin-bottom:8px;font:600 18px/1.3 var(--sans);color:rgba(255,255,255,.94)}
+#pc .pc-campo input{width:100%;min-height:66px;padding:0 54px 0 18px;font:600 22px/1.2 var(--sans);color:#fff;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.34);border-radius:16px;transition:border-color .2s,background .2s,box-shadow .2s}
+#pc .pc-campo input::placeholder{color:rgba(255,255,255,.42);font-weight:500}
+#pc .pc-campo input:focus{border-color:var(--sol);background:rgba(255,255,255,.13);box-shadow:0 0 0 4px rgba(250,191,33,.25)}
+#pc .pc-campo .pc-vale{position:absolute;right:16px;bottom:21px;width:26px;height:26px;color:var(--sol);stroke-width:3;opacity:0;transform:scale(.4);transition:opacity .2s,transform .3s var(--ease)}
+#pc .pc-campo.pc-valido .pc-vale{opacity:1;transform:scale(1)}
+#pc .pc-campo.pc-erro input{border-color:var(--sol-300);background:rgba(250,191,33,.10)}
+#pc .pc-msg-erro{display:flex;align-items:flex-start;margin-top:10px;font:600 17px/1.4 var(--sans);color:var(--sol-300)}
+#pc .pc-msg-erro .pc-ic{margin-right:8px;margin-top:2px;width:20px;height:20px}
+#pc .pc-lgpd{margin-top:20px;font-size:16px;line-height:1.5;color:rgba(255,255,255,.74)}
+#pc form .pc-btn{margin-top:22px}
+
+/* 6. ESPERA */
+#pc .pc-tela--espera{display:flex;align-items:center;min-height:calc(var(--alt) - 80px)}
+#pc .pc-tela--espera .pc-q{width:100%}
+#pc .pc-radar{position:relative;width:132px;height:132px;margin-bottom:30px}
+#pc .pc-radar i{position:absolute;top:0;left:0;width:100%;height:100%;border:2px solid var(--sol);border-radius:50%;opacity:0}
+#pc .pc-radar svg{position:absolute;top:50%;left:50%;width:56px;height:56px;margin:-28px 0 0 -28px;color:var(--sol);stroke-width:1.8}
+#pc.pc-anim .pc-radar i{animation:pcOnda 2.4s var(--ease) infinite}
+#pc.pc-anim .pc-radar i:nth-child(2){animation-delay:.8s}
+#pc.pc-anim .pc-radar i:nth-child(3){animation-delay:1.6s}
+@keyframes pcOnda{0%{transform:scale(.35);opacity:.9}100%{transform:scale(1);opacity:0}}
+#pc .pc-passos{margin-top:28px}
+#pc .pc-passos li{display:flex;align-items:center;min-height:44px;font:600 19px/1.35 var(--sans);color:rgba(255,255,255,.55);transition:color .4s}
+#pc .pc-passos li + li{margin-top:8px}
+#pc .pc-passos .pc-bola{flex:none;display:flex;align-items:center;justify-content:center;width:30px;height:30px;margin-right:14px;border:2px solid rgba(255,255,255,.35);border-radius:50%;transition:background .3s,border-color .3s}
+#pc .pc-passos .pc-bola .pc-ic{width:16px;height:16px;stroke-width:3.2;color:var(--indigo-950);opacity:0;transition:opacity .2s}
+#pc .pc-passos li.pc-feito{color:#fff}
+#pc .pc-passos li.pc-feito .pc-bola{background:var(--sol);border-color:var(--sol)}
+#pc .pc-passos li.pc-feito .pc-bola .pc-ic{opacity:1}
+
+/* 7. SUGESTÕES (cartões) */
+#pc .pc-tela--largo .pc-q{max-width:640px}
+#pc .pc-historico{display:flex;flex-wrap:wrap;margin:16px -4px 0}
+#pc .pc-historico li{margin:4px;padding:8px 14px;font:700 16px/1.2 var(--sans);color:var(--indigo-950);background:var(--sol-300);border-radius:999px}
+#pc .pc-cards{margin-top:28px}
+#pc .pc-card{display:block;width:100%;text-align:left;color:var(--indigo-950);background:var(--areia);border-radius:22px;overflow:hidden;box-shadow:0 22px 56px rgba(0,0,0,.36);cursor:pointer;transition:transform .22s var(--ease),box-shadow .22s;-webkit-tap-highlight-color:transparent}
+#pc .pc-card + .pc-card{margin-top:20px}
+#pc .pc-card:hover{transform:translateY(-3px);box-shadow:0 26px 60px rgba(0,0,0,.45)}
+#pc .pc-card-foto{display:block;position:relative;width:100%;height:0;padding-top:58%;background:var(--indigo-800);overflow:hidden}
+#pc .pc-card-foto img{position:absolute;top:0;left:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:50% 40%}
+#pc .pc-letra{position:absolute;z-index:2;left:14px;top:14px;display:flex;align-items:center;justify-content:center;width:46px;height:46px;font:800 22px/1 var(--titulo);color:#fff;background:var(--indigo-950);border:2px solid rgba(255,255,255,.75);border-radius:13px}
+#pc .pc-selo{position:absolute;z-index:2;right:14px;top:14px;padding:8px 13px;font:800 13px/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--indigo-950);background:var(--sol);border-radius:999px}
+#pc .pc-card-corpo{display:block;padding:20px 20px 22px}
+#pc .pc-card-t{display:block;font:800 24px/1.14 var(--titulo);letter-spacing:-.02em;color:var(--indigo-900)}
+#pc .pc-meta{display:flex;align-items:flex-start;margin-top:10px;font:600 18px/1.35 var(--sans);color:var(--indigo-800)}
+#pc .pc-meta .pc-ic{margin-right:10px;margin-top:1px;color:var(--indigo-600)}
+#pc .pc-preco{display:block;margin-top:14px;padding:12px 14px;font:600 17px/1.4 var(--sans);color:var(--indigo-900);background:#fff;border-left:4px solid var(--sol);border-radius:4px 12px 12px 4px}
+#pc .pc-preco b{font-weight:800}
+#pc .pc-card-acao{display:flex;align-items:center;justify-content:center;min-height:58px;margin-top:16px;padding:10px 16px;font:800 17px/1.2 var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--indigo-950);background:var(--sol);border-radius:14px}
+#pc .pc-card-acao .pc-ic{margin-left:8px;stroke-width:2.8}
+/* opção "tenho um destino em mente" */
+#pc .pc-outro{display:flex;align-items:center;width:100%;min-height:88px;margin-top:20px;padding:16px 18px;text-align:left;color:#fff;background:rgba(255,255,255,.07);border:2px dashed rgba(255,255,255,.45);border-radius:22px;cursor:pointer;transition:background .2s,border-color .2s;-webkit-tap-highlight-color:transparent}
+#pc .pc-outro:hover{background:rgba(255,255,255,.14);border-color:var(--sol)}
+#pc .pc-outro .pc-letra{position:static;flex:none;margin-right:14px}
+#pc .pc-outro-txt{flex:1 1 auto;font:700 21px/1.25 var(--sans)}
+#pc .pc-outro-txt small{display:block;margin-top:4px;font:500 17px/1.35 var(--sans);color:rgba(255,255,255,.78)}
+
+/* 8. LISTA DE DESTINOS */
+#pc .pc-destinos{margin-top:26px}
+#pc .pc-dest{display:flex;align-items:center;width:100%;min-height:64px;padding:12px 18px;text-align:left;font:600 20px/1.3 var(--sans);color:#fff;background:rgba(18,15,41,.64);border:2px solid rgba(255,255,255,.30);border-radius:16px;cursor:pointer;transition:background .2s,border-color .2s;-webkit-tap-highlight-color:transparent}
+#pc .pc-dest + .pc-dest{margin-top:10px}
+#pc .pc-dest:hover{background:rgba(255,255,255,.12);border-color:var(--sol)}
+#pc .pc-dest span{flex:1 1 auto}
+#pc .pc-dest small{flex:none;margin-left:10px;font:500 16px/1.2 var(--sans);color:rgba(255,255,255,.66)}
+#pc .pc-dest .pc-ic{margin-left:10px;color:var(--sol)}
+
+/* 9. FINAL */
+#pc .pc-escolhido{margin-top:24px;color:var(--indigo-950);background:var(--areia);border-radius:22px;overflow:hidden;box-shadow:0 22px 56px rgba(0,0,0,.36)}
+#pc .pc-escolhido .pc-card-corpo{padding-bottom:20px}
+#pc .pc-wa{margin-top:24px;padding:12px 18px;font-size:16px;letter-spacing:.03em}
+#pc .pc-nota{margin-top:14px;font-size:16px;line-height:1.5;color:rgba(255,255,255,.74);text-align:center}
+#pc .pc-link{display:block;width:100%;min-height:52px;margin-top:10px;padding:12px 6px;font:600 18px/1.3 var(--sans);color:var(--lavanda);text-align:center;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+#pc .pc-link:hover{color:#fff}
+#pc .pc-aviso-teste{position:fixed;z-index:20;left:50%;bottom:10px;transform:translateX(-50%);padding:8px 14px;font:700 14px/1.2 var(--sans);color:var(--indigo-950);background:var(--sol-300);border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.3);white-space:nowrap}
+
+/* 10. MOVIMENTO (só com JS; reduzido = parado) */
+#pc.pc-anim .pc-tela.pc-entra .pc-q > *{animation:pcSobe .6s var(--ease) backwards}
+#pc.pc-anim .pc-tela.pc-entra .pc-q > *:nth-child(2){animation-delay:.06s}
+#pc.pc-anim .pc-tela.pc-entra .pc-q > *:nth-child(3){animation-delay:.12s}
+#pc.pc-anim .pc-tela.pc-entra .pc-q > *:nth-child(n+4){animation-delay:.18s}
+#pc.pc-anim .pc-cards .pc-card{animation:pcSobe .7s var(--ease) backwards}
+#pc.pc-anim .pc-cards .pc-card:nth-child(2){animation-delay:.1s}
+#pc.pc-anim .pc-cards .pc-card:nth-child(3){animation-delay:.2s}
+@keyframes pcSobe{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#pc *,#pc *::before,#pc *::after{animation:none!important;transition:none!important}}
+
+/* 11. COMPUTADOR */
+@media (min-width:900px){
+  #pc{--calha:40px}
+  #pc .pc-tela--hero{flex-direction:row}
+  #pc .pc-hero-foto{order:2;width:46%;height:auto;max-height:none;min-height:var(--alt)}
+  #pc .pc-hero-foto::after{top:0;height:auto;width:40%;background:linear-gradient(90deg,#120F29 0%,rgba(18,15,41,0) 100%)}
+  #pc .pc-hero-txt{display:flex;flex-direction:column;justify-content:center;width:54%;max-width:none;margin:0;padding:110px 56px 56px 8vw}
+  #pc .pc-hero-txt > *{max-width:520px}
+  #pc .pc-tela{padding-top:30px}
+}
+
+/* ====================== 12. v5 (18/11): cartões lado a lado, outras datas, bandeiras ====================== */
+/* cartão = bloco com 2 botões (não é mais um botão inteiro) */
+#pc .pc-cards{display:grid;grid-template-columns:minmax(0,1fr);grid-gap:20px;gap:20px}
+#pc .pc-card{display:flex;flex-direction:column;cursor:default}
+#pc .pc-card + .pc-card{margin-top:0}
+#pc .pc-card:hover{transform:none;box-shadow:0 22px 56px rgba(0,0,0,.36)}
+#pc .pc-card-corpo{display:flex;flex-direction:column;flex:1 1 auto}
+#pc .pc-mola{flex:1 1 auto;min-height:6px}
+#pc .pc-card-acao{width:100%;cursor:pointer;transition:background .2s,transform .22s var(--ease);-webkit-tap-highlight-color:transparent}
+#pc .pc-card-acao:hover{background:var(--sol-300);transform:translateY(-2px)}
+#pc .pc-card-outras{display:flex;align-items:center;justify-content:center;width:100%;min-height:54px;margin-top:10px;padding:10px 14px;
+  font:700 16px/1.25 var(--sans);color:var(--indigo-800);text-align:center;background:#fff;border:2px solid rgba(52,44,96,.22);border-radius:14px;cursor:pointer;
+  transition:border-color .2s,background .2s;-webkit-tap-highlight-color:transparent}
+#pc .pc-card-outras .pc-ic{width:20px;height:20px;margin-right:8px;color:var(--indigo-600)}
+#pc .pc-card-outras:hover{border-color:var(--indigo-600);background:var(--areia)}
+#pc .pc-epoca{display:flex;align-items:center;margin-top:12px;padding:8px 12px;font:700 15px/1.3 var(--sans);color:var(--indigo-900);background:rgba(250,191,33,.28);border-radius:10px}
+#pc .pc-epoca .pc-ic{width:18px;height:18px;margin-right:8px;stroke-width:3}
+#pc .pc-outro{margin-top:20px}
+
+/* destinos com bandeiras: grade de botões grandes */
+#pc .pc-destinos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-gap:12px;gap:12px;margin-top:24px}
+#pc .pc-dest{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;min-height:128px;padding:16px 14px 14px;
+  font:700 19px/1.2 var(--sans);text-align:left}
+#pc .pc-dest + .pc-dest{margin-top:0}
+#pc .pc-bandeiras{display:flex;margin-bottom:12px}
+#pc .pc-bandeiras img{width:40px;height:40px;object-fit:cover;border-radius:50%;border:2px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.35);background:#fff}
+#pc .pc-bandeiras img + img{margin-left:-12px}
+#pc .pc-dest-nome{display:block;flex:none}
+#pc .pc-dest small{display:block;margin:6px 0 0;font:500 15px/1.3 var(--sans);color:rgba(255,255,255,.72)}
+#pc .pc-ja-foi{position:absolute;right:10px;top:12px;padding:5px 9px;font:800 12px/1 var(--sans);font-style:normal;letter-spacing:.05em;text-transform:uppercase;color:var(--indigo-950);background:var(--sol-300);border-radius:999px}
+
+/* outras datas do mesmo roteiro */
+#pc .pc-datas-foto{margin-top:20px;border-radius:20px;overflow:hidden}
+#pc .pc-datas-foto .pc-card-foto{padding-top:42%}
+#pc .pc-datas{margin-top:18px}
+#pc .pc-data{display:flex;align-items:center;width:100%;min-height:84px;padding:12px 16px 12px 12px;text-align:left;color:var(--indigo-950);background:var(--areia);border-radius:18px;cursor:pointer;
+  transition:transform .22s var(--ease),box-shadow .22s;-webkit-tap-highlight-color:transparent}
+#pc .pc-data + .pc-data{margin-top:12px}
+#pc .pc-data:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+#pc .pc-data-dia{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:60px;height:60px;margin-right:14px;font:700 13px/1 var(--sans);text-transform:uppercase;color:#fff;background:var(--indigo-800);border-radius:14px}
+#pc .pc-data-dia b{display:block;margin-bottom:3px;font:800 24px/1 var(--titulo)}
+#pc .pc-data-txt{flex:1 1 auto;min-width:0}
+#pc .pc-data-txt b{display:block;font:800 19px/1.25 var(--sans);color:var(--indigo-900)}
+#pc .pc-data-txt small{display:block;margin-top:4px;font:600 16px/1.3 var(--sans);color:var(--indigo-800)}
+#pc .pc-data-txt .pc-epoca{display:inline-flex;margin-top:8px;padding:5px 10px;font-size:14px}
+#pc .pc-data > .pc-ic{flex:none;margin-left:10px;color:var(--indigo-600)}
+
+/* tablet: 2 cartões lado a lado */
+@media (min-width:700px){
+  #pc .pc-tela--largo .pc-q{max-width:1180px}
+  #pc .pc-tela--largo .pc-t,#pc .pc-tela--largo .pc-ap{max-width:780px}
+  #pc .pc-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #pc .pc-destinos{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #pc .pc-outro{max-width:620px}
+}
+/* computador: 3 cartões lado a lado, destinos em 4 colunas */
+@media (min-width:1024px){
+  #pc .pc-cards{grid-template-columns:repeat(3,minmax(0,1fr));grid-gap:24px;gap:24px}
+  #pc .pc-destinos{grid-template-columns:repeat(4,minmax(0,1fr));grid-gap:14px;gap:14px}
+  #pc .pc-card-t{font-size:23px}
+}
+
+/* ====================== 13. v6 (18/11): foto da viagem, quantas pessoas ====================== */
+#pc .pc-lembra{position:relative;margin:4px 0 20px;max-width:620px;border-radius:20px;overflow:hidden;background:var(--indigo-800);box-shadow:0 18px 44px rgba(0,0,0,.4)}
+#pc .pc-lembra img{display:block;width:100%;height:220px;max-width:none;object-fit:cover;object-position:50% 45%}
+#pc .pc-lembra figcaption{position:absolute;left:0;right:0;bottom:0;padding:44px 16px 14px;font:600 16px/1.35 var(--sans);color:#fff;background:linear-gradient(180deg,rgba(18,15,41,0) 0%,rgba(18,15,41,.88) 70%)}
+#pc .pc-lembra figcaption b{display:block;margin-bottom:2px;font:800 20px/1.2 var(--titulo);color:var(--sol)}
+@media (min-width:700px){#pc .pc-lembra img{height:300px}}
+#pc .pc-pessoas{margin-top:24px}
+#pc .pc-pessoas legend{display:block;margin-bottom:10px;font:700 18px/1.3 var(--sans);color:#fff}
+#pc .pc-pessoas-ops{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-gap:8px;gap:8px}
+#pc .pc-pessoas-ops button{min-height:60px;padding:8px 6px;font:700 17px/1.2 var(--sans);color:#fff;text-align:center;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.34);border-radius:14px;cursor:pointer;transition:background .2s,border-color .2s,color .2s;-webkit-tap-highlight-color:transparent}
+#pc .pc-pessoas-ops button:hover{border-color:var(--sol)}
+#pc .pc-pessoas-ops button[aria-pressed="true"]{color:var(--indigo-950);background:var(--sol);border-color:var(--sol)}
+
+/* ====================== 14. v7 (18/11): título curto + viagens em lista ====================== */
+#pc [data-ola]{font-size:16px}
+#pc #pc-h3{font-size:30px;font-size:clamp(28px,7.4vw,40px)}
+#pc .pc-hist{max-width:620px;margin-top:20px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.18);border-radius:20px;overflow:hidden}
+#pc .pc-hist .pc-lembra{margin:0;max-width:none;border-radius:0;box-shadow:none}
+#pc .pc-hist .pc-lembra img{height:190px}
+#pc .pc-hist .pc-lembra figcaption{padding:36px 16px 12px;font:800 18px/1.2 var(--titulo);color:var(--sol)}
+#pc .pc-hist-t{padding:16px 18px 0;font:800 13px/1.2 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--lavanda)}
+#pc .pc-hist .pc-historico{display:block;margin:0;padding:8px 18px 16px}
+#pc .pc-hist .pc-historico li{display:flex;align-items:flex-start;margin:0;padding:10px 0;background:none;border-radius:0;color:#fff;font:600 18px/1.3 var(--sans)}
+#pc .pc-hist .pc-historico li + li{border-top:1px solid rgba(255,255,255,.12)}
+#pc .pc-hist .pc-historico .pc-ic{flex:none;width:24px;height:24px;margin:1px 12px 0 0;padding:4px;color:var(--indigo-950);background:var(--sol);border-radius:50%;stroke-width:3}
+#pc .pc-hist .pc-historico b{display:block;font-weight:700}
+#pc .pc-hist .pc-historico small{display:block;margin-top:2px;font:500 16px/1.3 var(--sans);color:rgba(255,255,255,.72)}
+#pc .pc-tela[data-id="sugestoes"] [data-sub]{margin-top:22px}
+@media (min-width:700px){#pc .pc-hist .pc-lembra img{height:260px}}
+
+/* ====================== 15. v10 (18/11): título da lista, países, selo ====================== */
+
+#pc .pc-paises{display:block;margin-top:6px;font:600 16px/1.35 var(--sans);color:var(--indigo-600)}
+#pc .pc-selo{max-width:calc(100% - 80px);white-space:normal;text-align:center;line-height:1.2}
+
+
+/* ====================== 16. v12 (18/11): pedido de ligação, voltar de onde parou ====================== */
+#pc .pc-ligar .pc-ic-fone{margin:0 10px 0 0;width:22px;height:22px;stroke-width:2.2}
+#pc .pc-lig-passos{margin-top:24px}
+#pc .pc-lig-passos li{display:flex;align-items:flex-start;padding:14px 16px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.16);border-radius:16px}
+#pc .pc-lig-passos li + li{margin-top:10px}
+#pc .pc-lig-passos span{flex:none;display:flex;align-items:center;justify-content:center;width:34px;height:34px;margin-right:14px;font:800 18px/1 var(--titulo);color:var(--indigo-950);background:var(--sol);border-radius:50%}
+#pc .pc-lig-passos p{font:500 18px/1.45 var(--sans);color:#fff}
+#pc .pc-lig-passos b,#pc [data-lig-roteiro]{font-weight:800;color:var(--sol-300)}
+#pc .pc-link-inline{color:var(--lavanda);text-decoration:underline;text-underline-offset:3px;font-weight:700}
+#pc .pc-volta{display:flex;flex-wrap:wrap;align-items:center;margin:0 0 18px;padding:12px 14px;font:600 16px/1.4 var(--sans);color:var(--indigo-950);background:var(--sol-300);border-radius:14px}
+#pc .pc-volta span{flex:1 1 220px;margin-right:10px}
+#pc .pc-volta button{min-height:44px;padding:4px 0;font:700 15px/1.2 var(--sans);color:var(--indigo-800);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+/* ====================== 17. v15 (19/11): legenda da foto do grupo com a viagem ====================== */
+#pc .pc-hist .pc-lembra figcaption small{display:block;margin-top:3px;font:600 15px/1.3 var(--sans);color:#fff}
+
+</style>
+<div id="pc" class="pc" data-tela="boas-vindas">
+  <svg class="pc-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="pc-i-voltar" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="pc-i-seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="pc-i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="pc-i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="pc-i-relogio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="pc-i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.2M12 7.7v.1"/></symbol>
+    <symbol id="pc-i-aviao" viewBox="0 0 24 24"><path d="M10.2 13.8L3 11l1.6-1.6 8.2 1.2 4.4-4.4c.8-.8 2.2-.9 2.9-.2.7.7.6 2.1-.2 2.9l-4.4 4.4 1.2 8.2L15.1 23l-2.8-7.2-3.4 3.4.3 2.6-1.4 1.4-1.6-3.7L2.5 18l1.4-1.4 2.6.3 3.7-3.1z"/></symbol>
+    <symbol id="pc-i-fone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+    <symbol id="pc-i-wa" viewBox="0 0 24 24"><path d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01zm-7.01 15.24h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.2 8.2 0 0 1 5.83 2.42 8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.22-8.24 8.22zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29z"/></symbol>
+  </svg>
+
+  <header class="pc-topo">
+    <button class="pc-voltar" type="button" data-acao="voltar" aria-label="Voltar para a tela anterior"><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-voltar"/></svg>Voltar</button>
+    <span class="pc-logo"><img src="https://promosdeviagem.com.br/wp-content/uploads/2026/09/logo-lielu-branca.png" width="400" height="213" alt="Lielu Turismo" decoding="async"></span>
+    <span></span>
+  </header>
+
+  <main class="pc-palco">
+
+    <!-- 1 · boas-vindas: nome e WhatsApp -->
+    <section class="pc-tela pc-tela--hero" data-id="boas-vindas" aria-labelledby="pc-h1">
+      <div class="pc-hero-foto"><img src="https://promosdeviagem.com.br/wp-content/uploads/2026/10/funil-abertura.jpg" alt="" fetchpriority="high" decoding="async"></div>
+      <div class="pc-hero-txt">
+        <span class="pc-kicker">Para quem já viajou com a Lielu</span>
+        <h1 class="pc-t" id="pc-h1" tabindex="-1">Que bom ter você de volta!</h1>
+        <p class="pc-ap">Separamos roteiros pensando nas viagens que você já fez com a gente.</p>
+        <form class="pc-form" novalidate>
+          <div class="pc-campo" data-campo="nome">
+            <label for="pc-nome">Seu nome</label>
+            <input id="pc-nome" name="nome" type="text" autocomplete="name" autocapitalize="words" enterkeyhint="next" placeholder="Como você se chama?">
+            <svg class="pc-ic pc-vale" aria-hidden="true"><use href="#pc-i-check"/></svg>
+            <p class="pc-msg-erro" hidden><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-info"/></svg><span>Escreva seu nome, por favor.</span></p>
+          </div>
+          <div class="pc-campo" data-campo="tel">
+            <label for="pc-tel">Seu WhatsApp com DDD</label>
+            <input id="pc-tel" name="tel" type="tel" inputmode="numeric" autocomplete="tel-national" enterkeyhint="go" placeholder="(11) 98765-4321">
+            <svg class="pc-ic pc-vale" aria-hidden="true"><use href="#pc-i-check"/></svg>
+            <p class="pc-msg-erro" hidden><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-info"/></svg><span>Confira o número: DDD e celular, 11 números.</span></p>
+          </div>
+          <button class="pc-btn" type="submit"><span>Ver meus roteiros</span><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-seta"/></svg></button>
+          <p class="pc-lgpd">Usamos seus dados só para encontrar suas viagens e falar com você sobre roteiros da Lielu.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- 2 · espera: buscando as viagens -->
+    <section class="pc-tela pc-tela--espera" data-id="espera" aria-labelledby="pc-h2" hidden>
+      <div class="pc-q" role="status" aria-live="polite">
+        <div class="pc-radar" aria-hidden="true"><i></i><i></i><i></i><svg class="pc-ic" viewBox="0 0 24 24"><use href="#pc-i-aviao"/></svg></div>
+        <h2 class="pc-t" id="pc-h2" tabindex="-1">Só um instante, <span data-nome></span>, estamos buscando suas viagens…</h2>
+        <p class="pc-ap">Leva só alguns segundos.</p>
+        <ul class="pc-passos">
+          <li><span class="pc-bola"><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-check"/></svg></span>Procurando o seu cadastro</li>
+          <li><span class="pc-bola"><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-check"/></svg></span>Lendo as suas viagens com a Lielu</li>
+          <li><span class="pc-bola"><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-check"/></svg></span>Separando roteiros para você</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3 · sugestões: anúncio + 2 parecidos + "tenho um destino em mente" -->
+    <section class="pc-tela pc-tela--largo" data-id="sugestoes" aria-labelledby="pc-h3" hidden>
+      <div class="pc-q">
+        <span class="pc-kicker" data-ola>Roteiros para você</span>
+        <h2 class="pc-t" id="pc-h3" tabindex="-1"></h2>
+        <div class="pc-hist" data-hist hidden>
+          <figure class="pc-lembra" data-lembra hidden></figure>
+          <p class="pc-hist-t" data-hist-t></p>
+          <ul class="pc-historico"></ul>
+        </div>
+        <p class="pc-ap" data-sub></p>
+        <div class="pc-cards" data-lista="sugestoes"></div>
+        <button class="pc-outro" type="button" data-acao="outro"><span class="pc-letra" aria-hidden="true">D</span><span class="pc-outro-txt">Tenho um destino em mente<small>Escolha o lugar que você quer conhecer</small></span><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-seta"/></svg></button>
+      </div>
+    </section>
+
+    <!-- 3b · lista de destinos -->
+    <section class="pc-tela pc-tela--largo" data-id="destinos" aria-labelledby="pc-h4" hidden>
+      <div class="pc-q">
+        <span class="pc-kicker">Escolha o destino</span>
+        <h2 class="pc-t" id="pc-h4" tabindex="-1">Para onde você quer ir?</h2>
+        <p class="pc-ap">Escolha o destino e mostramos os roteiros e as datas.</p>
+        <div class="pc-destinos" data-lista="destinos"></div>
+      </div>
+    </section>
+
+    <!-- 3c · saídas do destino escolhido -->
+    <section class="pc-tela pc-tela--largo" data-id="saidas" aria-labelledby="pc-h5" hidden>
+      <div class="pc-q">
+        <span class="pc-kicker" data-dest-nome></span>
+        <h2 class="pc-t" id="pc-h5" tabindex="-1">Escolha a sua saída</h2>
+        <p class="pc-ap">Os roteiros deste destino. Em cada um você pode ver outras datas.</p>
+        <div class="pc-cards" data-lista="saidas"></div>
+      </div>
+    </section>
+
+    <!-- 3d · outras datas do mesmo roteiro -->
+    <section class="pc-tela" data-id="datas" aria-labelledby="pc-h7" hidden>
+      <div class="pc-q">
+        <span class="pc-kicker" data-datas-roteiro></span>
+        <h2 class="pc-t" id="pc-h7" tabindex="-1">Escolha a data</h2>
+        <div class="pc-datas-foto" data-datas-foto></div>
+        <div class="pc-datas" data-lista="datas"></div>
+      </div>
+    </section>
+
+    <!-- 4 · roteiro escolhido + WhatsApp -->
+    <section class="pc-tela" data-id="final" aria-labelledby="pc-h6" hidden>
+      <div class="pc-q">
+        <span class="pc-kicker">Ótima escolha</span>
+        <h2 class="pc-t" id="pc-h6" tabindex="-1"></h2>
+        <p class="pc-ap">Agora é só receber no seu WhatsApp o dia a dia do roteiro e os valores desta saída.</p>
+        <div class="pc-escolhido" data-escolhido></div>
+        <fieldset class="pc-pessoas">
+          <legend>Quantas pessoas vão viajar?</legend>
+          <div class="pc-pessoas-ops">
+            <button type="button" data-pessoas="1" aria-pressed="false">Só eu</button>
+            <button type="button" data-pessoas="2" aria-pressed="false">Eu + 1</button>
+            <button type="button" data-pessoas="3" aria-pressed="false">Eu + 2 ou mais</button>
+          </div>
+        </fieldset>
+        <a class="pc-btn pc-wa" data-wa href="#" target="_blank" rel="noopener"><svg class="pc-ic-wa" aria-hidden="true"><use href="#pc-i-wa"/></svg><span>Receber tudo no WhatsApp</span></a>
+        <p class="pc-nota">Abre o WhatsApp com a mensagem pronta. É só enviar.</p>
+        <button class="pc-btn pc-btn--sec pc-ligar" type="button" data-acao="ligar" hidden><svg class="pc-ic pc-ic-fone" aria-hidden="true"><use href="#pc-i-fone"/></svg><span>Prefiro receber uma ligação</span></button>
+        <button class="pc-link" type="button" data-acao="voltar">Quero ver outro roteiro</button>
+      </div>
+    </section>
+
+    <!-- 5 · pedido de ligação -->
+    <section class="pc-tela" data-id="ligacao" aria-labelledby="pc-h8" hidden>
+      <div class="pc-q">
+        <span class="pc-kicker">Pedido de ligação</span>
+        <h2 class="pc-t" id="pc-h8" tabindex="-1">Ótimo!</h2>
+        <p class="pc-ap">Para a gente te ligar e falar sobre <b data-lig-roteiro></b>, é bem simples:</p>
+        <ol class="pc-lig-passos">
+          <li><span>1</span><p>Agora você vai receber uma mensagem da Lielu no seu WhatsApp (final <b data-lig-final></b>), enviada pelo número <b data-lig-lielu></b>.</p></li>
+          <li><span>2</span><p>Na mensagem, aceite o pedido de ligação.</p></li>
+          <li><span>3</span><p>Pronto! Um consultor da Lielu te liga para conversar.</p></li>
+        </ol>
+        <p class="pc-nota">Prefere escrever? <a class="pc-link-inline" data-wa2 href="#" target="_blank" rel="noopener">Fale com a gente pelo WhatsApp</a></p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ========================================================================
+   Lielu · Funil "Prata da Casa" — v1 (18/11/2026, Ciparoni)
+   4 telas: boas-vindas (nome + WhatsApp) → espera (n8n consulta o sistema
+   do Armando) → roteiros (anúncio + 2 parecidos + "tenho um destino em
+   mente") → roteiro escolhido + botão do WhatsApp.
+
+   O QUE O C-3PO MEXE: só o bloco CONFIG (endpoint e modo_teste).
+   Contrato com o n8n: ver ../CONTRATO-n8n.md
+   ======================================================================== */
+(function () {
+  'use strict';
+
+  var CONFIG = {
+    endpoint: 'https://lieluturismo.app.n8n.cloud/webhook/prata-da-casa-cl', // consulta da tela 2 (C-3PO, 18/11). POST application/json
+    endpoint_ligacao: 'https://lieluturismo.app.n8n.cloud/webhook/prata-da-casa-ligacao',   // C-3PO 18/11 (guarda e tira repetido em 24 h)
+    ligacao_no_ar: true,   // false = botão ESCONDIDO no ar até o C-3PO avisar (card e modelo da Clint dependem do Bruno)
+    endpoint_whatsapp: 'https://lieluturismo.app.n8n.cloud/webhook/prata-da-casa-whatsapp',   // C-3PO 18/11: card na Clint no clique (imagem pelo saida_slug)
+    endpoint_eventos: '',      // eventos escolha/whatsapp (em branco = só console). A consulta acima NÃO recebe eventos
+    modo_teste: false, // true = resposta falsa (?caso=achou | so_vai_viajar | nome_diferente | nao_achou) e nada é enviado
+    whatsapp: '5511988523886', // número que recebe a mensagem pronta (o mesmo do Tipo de Viajante V2)
+    mostrar_preco: false,      // false = igual ao Tipo de Viajante (preço só no WhatsApp). true = mostra entrada + 12x do site
+    ga4: 'G-Q935WF4BWJ',                   // propriedade do GA4 ('' desliga). O build do ar põe a mesma das outras páginas
+    metaPixel: '1055456758203985',             // pixel do Meta ('' desliga). Onde o PixelYourSite já instala, a página não carrega de novo
+    espera_min: 2600,          // ms: a tela de espera fica pelo menos isto (dá tempo de ler)
+    espera_max: 8000,          // ms: se a consulta não responder, segue sem histórico (pedido do C-3PO)
+    midia: 'https://promosdeviagem.com.br/wp-content/uploads/2026/10/',
+    fotos_grupo: 'https://lieluenzo.github.io/lielu-fotos-grupos/'   // pasta da fábrica de fotos de grupo (indice.json + fotos/)
+  };
+
+  var DADOS = {"destinos":[{"chave":"aurora-boreal","nome":"Aurora Boreal"},{"chave":"china","nome":"China"},{"chave":"coreia","nome":"Coreia do Sul"},{"chave":"balcas","nome":"Croácia e Bálcãs"},{"chave":"egito","nome":"Egito"},{"chave":"emirados","nome":"Emirados Árabes"},{"chave":"escandinavia","nome":"Escandinávia"},{"chave":"espanha","nome":"Espanha"},{"chave":"europa-do-leste","nome":"Europa do Leste"},{"chave":"franca","nome":"França"},{"chave":"gra-bretanha","nome":"Grã-Bretanha"},{"chave":"grecia","nome":"Grécia"},{"chave":"holanda","nome":"Holanda e Keukenhof"},{"chave":"italia","nome":"Itália"},{"chave":"japao","nome":"Japão"},{"chave":"marrocos","nome":"Marrocos"},{"chave":"portugal","nome":"Portugal"},{"chave":"suica","nome":"Suíça"},{"chave":"tailandia","nome":"Tailândia"},{"chave":"tunisia","nome":"Tunísia"},{"chave":"turquia","nome":"Turquia"}],"saidas":[{"slug":"tailandia-jan2027","roteiro":"Tailândia","destino":"tailandia","data":"2027-01-19","data_txt":"19 de janeiro de 2027","dias":17,"link":"https://lieluturismo.com.br/tailandia-jan2027/","foto":"funil-r-tailandia.jpg","preco":{"completo":{"total":53939,"entrada":10787,"parcela":3596},"terrestre":{"total":40124,"entrada":8024,"parcela":2675}},"parecidos":["suica-ago2027","china-mistura-16mar2027","coreia-do-sul-mai2027"],"paises":"Tailândia"},{"slug":"italia-carnaval-veneza-2027","roteiro":"Carnaval em Veneza","destino":"italia","data":"2027-02-03","data_txt":"3 de fevereiro de 2027","dias":12,"link":"https://lieluturismo.com.br/italia-carnaval-veneza-2027/","foto":"funil-r-carnaval-em-veneza.jpg","preco":{"completo":{"total":37621,"entrada":7525,"parcela":2508},"terrestre":{"total":28905,"entrada":5781,"parcela":1927}},"parecidos":["tunisia-abr2027","europa-do-leste-21abr2027","bulgaria-e-romenia-mai2027"],"paises":"Itália"},{"slug":"japao-seleto-23fev27","roteiro":"Japão Seleto","destino":"japao","data":"2027-02-23","data_txt":"23 de fevereiro de 2027","dias":14,"link":"https://lieluturismo.com.br/japao-seleto-23fev27/","foto":"funil-r-japao-essencial.jpg","preco":{"completo":{"total":49621,"entrada":9925,"parcela":3308},"terrestre":{"total":38684,"entrada":7736,"parcela":2579}},"parecidos":["grecia-ago2027","suica-09jun2027","tailandia-jan2027"],"paises":"Japão"},{"slug":"aurora-boreal-mar2027","roteiro":"Aurora Boreal na Noruega","destino":"aurora-boreal","data":"2027-03-02","data_txt":"2 de março de 2027","dias":14,"link":"https://lieluturismo.com.br/aurora-boreal-mar2027/","foto":"funil-r-aurora-boreal-na-noruega.jpg","preco":{"completo":{"total":59746,"entrada":11950,"parcela":3983},"terrestre":{"total":50491,"entrada":10099,"parcela":3366}},"parecidos":["china-exuberante-chengdu-jun2027","escandinavia-set2027","espanha-do-sul-e-marrocos-2027"],"paises":"Noruega"},{"slug":"china-exuberante-mar2027","roteiro":"China Exuberante","destino":"china","data":"2027-03-06","data_txt":"6 de março de 2027","dias":20,"link":"https://lieluturismo.com.br/china-exuberante-mar2027/","foto":"funil-r-china-exuberante.jpg","preco":{"completo":{"total":62219,"entrada":12443,"parcela":4148},"terrestre":{"total":48374,"entrada":9674,"parcela":3225}},"parecidos":["aurora-boreal-mar2027","escandinavia-set2027","espanha-do-sul-e-marrocos-mai2027"],"paises":"China"},{"slug":"europa-do-leste-mar2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-03-08","data_txt":"8 de março de 2027","dias":16,"link":"https://lieluturismo.com.br/europa-do-leste-mar2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":35985,"entrada":7197,"parcela":2399},"terrestre":{"total":25726,"entrada":5146,"parcela":1715}},"parecidos":["espanha-do-sul-abr2027","encantos-da-italia-08mai2027","italia-do-sul-abr2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, Polônia, República Tcheca"},{"slug":"turquia-com-chios-09mar2027","roteiro":"Turquia com Chios e 3 noites na Capadócia","destino":"turquia","data":"2027-03-09","data_txt":"9 de março de 2027","dias":16,"link":"https://lieluturismo.com.br/turquia-com-chios-09mar2027/","foto":"funil-r-turquia-com-chios-e-3-noites-na-capadocia.jpg","preco":{"completo":{"total":32686,"entrada":6538,"parcela":2179},"terrestre":{"total":22425,"entrada":4485,"parcela":1495}},"parecidos":["italia-do-norte-abr2027","dubai-jun2027","marrocos-mai2027"],"paises":"Turquia e Grécia"},{"slug":"china-continental-16mar2027","roteiro":"China Continental","destino":"china","data":"2027-03-16","data_txt":"16 de março de 2027","dias":16,"link":"https://lieluturismo.com.br/china-continental-16mar2027/","foto":"funil-r-china-continental.jpg","preco":{"completo":{"total":46501,"entrada":9301,"parcela":3100},"terrestre":{"total":32339,"entrada":6467,"parcela":2156}},"parecidos":["croacia-jul2027","egito-espetacular-abr2027","europa-do-leste-set2027"],"paises":"China"},{"slug":"china-mistura-16mar2027","roteiro":"Uma Mistura de China","destino":"china","data":"2027-03-16","data_txt":"16 de março de 2027","dias":20,"link":"https://lieluturismo.com.br/china-mistura-16mar2027/","foto":"funil-r-uma-mistura-de-china.jpg","preco":{"completo":{"total":56939,"entrada":11387,"parcela":3796},"terrestre":{"total":40726,"entrada":8146,"parcela":2715}},"parecidos":["suica-12mai2027","coreia-do-sul-mai2027","tailandia-jan2027"],"paises":"China"},{"slug":"japao-nas-cerejeiras-20mar2027","roteiro":"Japão das Cerejeiras","destino":"japao","data":"2027-03-20","data_txt":"20 de março de 2027","dias":20,"link":"https://lieluturismo.com.br/japao-nas-cerejeiras-20mar2027/","foto":"funil-r-japao-essencial-em-flor-cerejeiras.jpg","preco":{"completo":{"total":74625,"entrada":14925,"parcela":4975},"terrestre":{"total":59204,"entrada":11840,"parcela":3947}},"parecidos":["escandinavia-jun2027","espanha-do-sul-e-marrocos-2027","china-exuberante-chengdu-jun2027"],"paises":"Japão"},{"slug":"turquia-e-chios-22mar2027","roteiro":"Turquia com Chios e Bodrum","destino":"turquia","data":"2027-03-22","data_txt":"22 de março de 2027","dias":14,"link":"https://lieluturismo.com.br/turquia-e-chios-22mar2027/","foto":"funil-r-turquia-com-chios-e-bodrum.jpg","preco":{"completo":{"total":32671,"entrada":6535,"parcela":2178},"terrestre":{"total":23354,"entrada":4670,"parcela":1557}},"parecidos":["dubai-jun2027","italia-do-sul-ago2027","marrocos-mai2027"],"paises":"Turquia e Grécia"},{"slug":"japao-nas-cerejeiras-24mar2027","roteiro":"Japão das Cerejeiras","destino":"japao","data":"2027-03-24","data_txt":"24 de março de 2027","dias":21,"link":"https://lieluturismo.com.br/japao-nas-cerejeiras-24mar2027/","foto":"funil-r-japao-essencial-em-flor-cerejeiras.jpg","preco":{"completo":{"total":86145,"entrada":17229,"parcela":5743},"terrestre":{"total":70681,"entrada":14137,"parcela":4712}},"parecidos":["escandinavia-jun2027","espanha-do-sul-e-marrocos-2027","china-exuberante-chengdu-jun2027"],"paises":"Japão"},{"slug":"china-novos-encantos-leshan-mar2027","roteiro":"China Novos Encantos e Tesouros (Leshan)","destino":"china","data":"2027-03-25","data_txt":"25 de março de 2027","dias":20,"link":"https://lieluturismo.com.br/china-novos-encantos-leshan-mar2027/","foto":"funil-r-china-novos-encantos-e-tesouros-leshan.jpg","preco":{"completo":{"total":57704,"entrada":11540,"parcela":3847},"terrestre":{"total":43861,"entrada":8773,"parcela":2924}},"parecidos":["suica-e-italia-mai2027","japao-jul2027","reino-unido-cafe-da-manha-jun2027"],"paises":"China"},{"slug":"japao-essencial-nas-cerejeiras-mar2027","roteiro":"Japão Essencial em Flor (cerejeiras)","destino":"japao","data":"2027-03-30","data_txt":"30 de março de 2027","dias":17,"link":"https://lieluturismo.com.br/japao-essencial-nas-cerejeiras-mar2027/","foto":"funil-r-japao-essencial-em-flor-cerejeiras.jpg","preco":{"completo":{"total":60600,"entrada":12120,"parcela":4040},"terrestre":{"total":45885,"entrada":9177,"parcela":3059}},"parecidos":["coreia-do-sul-abr2027","espanha-do-sul-e-marrocos-mai2027","reino-unido-jun2027"],"paises":"Japão"},{"slug":"keukenhof-01abr2027","roteiro":"Keukenhof","destino":"holanda","data":"2027-04-01","data_txt":"1 de abril de 2027","dias":15,"link":"https://lieluturismo.com.br/keukenhof-01abr2027/","foto":"funil-r-keukenhof.jpg","preco":{"completo":{"total":39899,"entrada":7979,"parcela":2660},"terrestre":{"total":29580,"entrada":5916,"parcela":1972}},"parecidos":["hol-ale-fra-lux-bel-abr27","europa-do-leste-jul2027","croacia-set2027"],"paises":"França, Bélgica, Holanda, Luxemburgo e Alemanha"},{"slug":"tunisia-abr2027","roteiro":"Tunísia","destino":"tunisia","data":"2027-04-02","data_txt":"2 de abril de 2027","dias":14,"link":"https://lieluturismo.com.br/tunisia-abr2027/","foto":"funil-r-tunisia.jpg","preco":{"completo":{"total":40889,"entrada":8177,"parcela":2726},"terrestre":{"total":28890,"entrada":5778,"parcela":1926}},"parecidos":["italia-carnaval-veneza-2027","europa-do-leste-21abr2027","bulgaria-e-romenia-mai2027"],"paises":"Tunísia"},{"slug":"china-exuberante-abr2027","roteiro":"China Exuberante","destino":"china","data":"2027-04-04","data_txt":"4 de abril de 2027","dias":20,"link":"https://lieluturismo.com.br/china-exuberante-abr2027/","foto":"funil-r-china-exuberante.jpg","preco":{"completo":{"total":60946,"entrada":12190,"parcela":4063},"terrestre":{"total":48526,"entrada":9706,"parcela":3235}},"parecidos":["aurora-boreal-mar2027","escandinavia-set2027","espanha-do-sul-e-marrocos-2027"],"paises":"China"},{"slug":"espanha-do-sul-abr2027","roteiro":"Espanha do Sul","destino":"espanha","data":"2027-04-04","data_txt":"4 de abril de 2027","dias":15,"link":"https://lieluturismo.com.br/espanha-do-sul-abr2027/","foto":"funil-r-espanha-do-sul.jpg","preco":{"completo":{"total":35564,"entrada":7112,"parcela":2371},"terrestre":{"total":25784,"entrada":5156,"parcela":1719}},"parecidos":["europa-do-leste-mar2027","encantos-da-italia-08mai2027","italia-do-sul-abr2027"],"paises":"Espanha"},{"slug":"europa-do-leste-06abr2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-04-06","data_txt":"6 de abril de 2027","dias":16,"link":"https://lieluturismo.com.br/europa-do-leste-06abr2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":40245,"entrada":8049,"parcela":2683},"terrestre":{"total":29879,"entrada":5975,"parcela":1992}},"parecidos":["hol-ale-fra-lux-bel-06abr27","keukenhof-18abr2027","de-veneza-a-dubrovnik-ago2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, Polônia, República Tcheca"},{"slug":"hol-ale-fra-lux-bel-06abr27","roteiro":"Keukenhof","destino":"holanda","data":"2027-04-06","data_txt":"6 de abril de 2027","dias":14,"link":"https://lieluturismo.com.br/hol-ale-fra-lux-bel-06abr27/","foto":"funil-r-keukenhof.jpg","preco":{"completo":{"total":39826,"entrada":7966,"parcela":2655},"terrestre":{"total":29909,"entrada":5981,"parcela":1994}},"parecidos":["europa-do-leste-06abr2027","keukenhof-18abr2027","de-veneza-a-dubrovnik-ago2027"],"paises":"Holanda, Alemanha, França, Luxemburgo e Bélgica"},{"slug":"6paises-abr2027","roteiro":"6 países","destino":"holanda","data":"2027-04-07","data_txt":"7 de abril de 2027","dias":17,"link":"https://lieluturismo.com.br/6paises-abr2027/","foto":"funil-r-6-paises.jpg","preco":{"completo":{"total":41414,"entrada":8282,"parcela":2761},"terrestre":{"total":31139,"entrada":6227,"parcela":2076}},"parecidos":["hol-ale-fra-lux-bel-03mai27","keukenhof-abr2027","europa-do-leste-set2027"],"paises":"Itália, Áustria, Suíça, França, Alemanha e Liechtenstein"},{"slug":"suica-abr2027","roteiro":"Suíça (Glacier Express)","destino":"suica","data":"2027-04-07","data_txt":"7 de abril de 2027","dias":15,"link":"https://lieluturismo.com.br/suica-abr2027/","foto":"funil-r-suica-glacier-express.jpg","preco":{"completo":{"total":54524,"entrada":10904,"parcela":3635},"terrestre":{"total":44399,"entrada":8879,"parcela":2960}},"parecidos":["china-mistura-16set2027","reino-unido-jun2027","japao-jul2027"],"paises":"Suíça"},{"slug":"espanha-do-sul-08abr2027","roteiro":"Espanha do Sul (quem já conhece Barcelona)","destino":"espanha","data":"2027-04-08","data_txt":"8 de abril de 2027","dias":15,"link":"https://lieluturismo.com.br/espanha-do-sul-08abr2027/","foto":"funil-r-espanha-do-sul.jpg","preco":{"completo":{"total":36869,"entrada":7373,"parcela":2458},"terrestre":{"total":27029,"entrada":5405,"parcela":1802}},"parecidos":["italia-do-sul-mai2027","croacia-abr2027","europa-do-leste-mai2027"],"paises":"Espanha"},{"slug":"espanha-do-sul-e-marrocos-2027","roteiro":"Espanha do Sul e Marrocos","destino":"espanha","data":"2027-04-08","data_txt":"8 de abril de 2027","dias":23,"link":"https://lieluturismo.com.br/espanha-do-sul-e-marrocos-2027/","foto":"funil-r-espanha-do-sul-e-marrocos.jpg","preco":{"completo":{"total":61154,"entrada":12230,"parcela":4077},"terrestre":{"total":50774,"entrada":10154,"parcela":3385}},"parecidos":["escandinavia-set2027","china-exuberante-chengdu-jun2027","aurora-boreal-mar2027"],"paises":"Espanha e Marrocos"},{"slug":"europa-do-leste-rota-romantica-abr2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria e República Tcheca","destino":"europa-do-leste","data":"2027-04-08","data_txt":"8 de abril de 2027","dias":15,"link":"https://lieluturismo.com.br/europa-do-leste-rota-romantica-abr2027/","foto":"funil-r-europa-do-leste-cidades-imperiais-e-alemanha.jpg","preco":{"completo":{"total":37904,"entrada":7580,"parcela":2527},"terrestre":{"total":27584,"entrada":5516,"parcela":1839}},"parecidos":["espanha-do-sul-set2027","croacia-02mai2027","italia-do-sul-set2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, República Tcheca"},{"slug":"keukenhof-abr2027","roteiro":"Keukenhof","destino":"holanda","data":"2027-04-08","data_txt":"8 de abril de 2027","dias":14,"link":"https://lieluturismo.com.br/keukenhof-abr2027/","foto":"funil-r-keukenhof.jpg","preco":{"completo":{"total":42210,"entrada":8442,"parcela":2814},"terrestre":{"total":31561,"entrada":6313,"parcela":2104}},"parecidos":["europa-do-leste-set2027","egito-espetacular-abr2027","croacia-jul2027"],"paises":"França, Bélgica, Holanda, Luxemburgo e Alemanha"},{"slug":"italia-do-norte-abr2027","roteiro":"Itália Clássica","destino":"italia","data":"2027-04-09","data_txt":"9 de abril de 2027","dias":11,"link":"https://lieluturismo.com.br/italia-do-norte-abr2027/","foto":"funil-r-italia-classica.jpg","preco":{"completo":{"total":31934,"entrada":6386,"parcela":2129},"terrestre":{"total":22304,"entrada":4460,"parcela":1487}},"parecidos":["turquia-com-chios-09mar2027","dubai-jun2027","marrocos-mai2027"],"paises":"Itália"},{"slug":"grecia-abr2027","roteiro":"Atenas e Ilhas Gregas","destino":"grecia","data":"2027-04-10","data_txt":"10 de abril de 2027","dias":12,"link":"https://lieluturismo.com.br/grecia-abr2027/","foto":"funil-r-atenas-e-ilhas-gregas.jpg","preco":{"completo":{"total":43950,"entrada":8790,"parcela":2930},"terrestre":{"total":33794,"entrada":6758,"parcela":2253}},"parecidos":["china-continental-mai2027","portugal-espanha-franca-e-andorra-2027","6paises-mai2027"],"paises":"Grécia"},{"slug":"turquia-com-chios-13abr2027","roteiro":"Turquia com Chios e Bodrum","destino":"turquia","data":"2027-04-13","data_txt":"13 de abril de 2027","dias":16,"link":"https://lieluturismo.com.br/turquia-com-chios-13abr2027/","foto":"funil-r-turquia-com-chios-e-bodrum.jpg","preco":{"completo":{"total":33060,"entrada":6612,"parcela":2204},"terrestre":{"total":22799,"entrada":4559,"parcela":1520}},"parecidos":["italia-do-norte-19abr2027","dubai-jun2027","marrocos-mai2027"],"paises":"Turquia e Grécia"},{"slug":"croacia-abr2027","roteiro":"De Veneza a Dubrovnik","destino":"balcas","data":"2027-04-14","data_txt":"14 de abril de 2027","dias":14,"link":"https://lieluturismo.com.br/croacia-abr2027/","foto":"funil-r-de-veneza-a-dubrovnik.jpg","preco":{"completo":{"total":37319,"entrada":7463,"parcela":2488},"terrestre":{"total":27269,"entrada":5453,"parcela":1818}},"parecidos":["europa-do-leste-mai2027","italia-do-sul-set2027","espanha-do-sul-mai2027"],"paises":"Itália, Eslovênia, Croácia e Bósnia"},{"slug":"egito-espetacular-abr2027","roteiro":"Egito Espetacular","destino":"egito","data":"2027-04-17","data_txt":"17 de abril de 2027","dias":14,"link":"https://lieluturismo.com.br/egito-espetacular-abr2027/","foto":"funil-r-egito-espetacular.jpg","preco":{"completo":{"total":42330,"entrada":8466,"parcela":2822},"terrestre":{"total":31786,"entrada":6358,"parcela":2119}},"parecidos":["europa-do-leste-set2027","croacia-jul2027","keukenhof-abr2027"],"paises":"Egito"},{"slug":"italia-do-sul-abr2027","roteiro":"Belezas do Sul da Itália","destino":"italia","data":"2027-04-17","data_txt":"17 de abril de 2027","dias":12,"link":"https://lieluturismo.com.br/italia-do-sul-abr2027/","foto":"funil-r-belezas-do-sul-da-italia.jpg","preco":{"completo":{"total":36194,"entrada":7238,"parcela":2413},"terrestre":{"total":26641,"entrada":5329,"parcela":1776}},"parecidos":["europa-do-leste-imperial-12mai2027","espanha-do-sul-08abr2027","croacia-abr2027"],"paises":"Itália"},{"slug":"hol-ale-fra-lux-bel-abr27","roteiro":"Keukenhof","destino":"holanda","data":"2027-04-18","data_txt":"18 de abril de 2027","dias":15,"link":"https://lieluturismo.com.br/hol-ale-fra-lux-bel-abr27/","foto":"funil-r-keukenhof.jpg","preco":{"completo":{"total":39961,"entrada":7993,"parcela":2664},"terrestre":{"total":29714,"entrada":5942,"parcela":1981}},"parecidos":["europa-do-leste-jul2027","keukenhof-01abr2027","de-veneza-a-dubrovnik-ago2027"],"paises":"Holanda, Alemanha, França, Luxemburgo e Bélgica"},{"slug":"keukenhof-18abr2027","roteiro":"Keukenhof","destino":"holanda","data":"2027-04-18","data_txt":"18 de abril de 2027","dias":15,"link":"https://lieluturismo.com.br/keukenhof-18abr2027/","foto":"funil-r-keukenhof.jpg","preco":{"completo":{"total":40111,"entrada":8023,"parcela":2674},"terrestre":{"total":29954,"entrada":5990,"parcela":1997}},"parecidos":["de-veneza-a-dubrovnik-ago2027","hol-ale-fra-lux-bel-06abr27","europa-do-leste-06abr2027"],"paises":"França, Bélgica, Holanda, Luxemburgo e Alemanha"},{"slug":"italia-do-norte-19abr2027","roteiro":"Encantos da Itália","destino":"italia","data":"2027-04-19","data_txt":"19 de abril de 2027","dias":12,"link":"https://lieluturismo.com.br/italia-do-norte-19abr2027/","foto":"funil-r-encantos-da-italia.jpg","preco":{"completo":{"total":33601,"entrada":6721,"parcela":2240},"terrestre":{"total":22785,"entrada":4557,"parcela":1519}},"parecidos":["turquia-com-chios-13abr2027","dubai-jun2027","marrocos-mai2027"],"paises":"Itália"},{"slug":"marrocos-2027","roteiro":"Marrocos","destino":"marrocos","data":"2027-04-20","data_txt":"20 de abril de 2027","dias":10,"link":"https://lieluturismo.com.br/marrocos-2027/","foto":"funil-r-marrocos.jpg","preco":{"completo":{"total":33569,"entrada":6713,"parcela":2238},"terrestre":{"total":23791,"entrada":4759,"parcela":1586}},"parecidos":["italia-do-sul-ago2027","dubai-jun2027","turquia-e-chios-22mar2027"],"paises":"Marrocos"},{"slug":"europa-do-leste-21abr2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-04-21","data_txt":"21 de abril de 2027","dias":16,"link":"https://lieluturismo.com.br/europa-do-leste-21abr2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":40274,"entrada":8054,"parcela":2685},"terrestre":{"total":28710,"entrada":5742,"parcela":1914}},"parecidos":["tunisia-abr2027","italia-carnaval-veneza-2027","croacia-eslovenia-bosnia-jun2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, Polônia, República Tcheca"},{"slug":"europa-do-leste-imperial-21abr2027","roteiro":"Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-04-21","data_txt":"21 de abril de 2027","dias":14,"link":"https://lieluturismo.com.br/europa-do-leste-imperial-21abr2027/","foto":"funil-r-europa-do-leste-cidades-imperiais.jpg","preco":{"completo":{"total":34140,"entrada":6828,"parcela":2276},"terrestre":{"total":24464,"entrada":4892,"parcela":1631}},"parecidos":["turquia-com-chios-jul2027","marrocos-2027","encantos-da-italia-08mai2027"],"paises":"Áustria, Eslováquia, Hungria, Polônia e República Tcheca"},{"slug":"japao-no-fim-das-cerejeiras-2027","roteiro":"Japão na Primavera (cerejeiras tardias)","destino":"japao","data":"2027-04-21","data_txt":"21 de abril de 2027","dias":21,"link":"https://lieluturismo.com.br/japao-no-fim-das-cerejeiras-2027/","foto":"funil-r-japao-na-primavera-cerejeiras-tardias.jpg","preco":{"completo":{"total":68279,"entrada":13655,"parcela":4552},"terrestre":{"total":54106,"entrada":10822,"parcela":3607}},"parecidos":["escandinavia-mai2027","espanha-do-sul-e-marrocos-2027","china-exuberante-chengdu-jun2027"],"paises":"Japão"},{"slug":"turquia-com-chios-21abr2027","roteiro":"Turquia com Chios e 3 noites na Capadócia","destino":"turquia","data":"2027-04-21","data_txt":"21 de abril de 2027","dias":14,"link":"https://lieluturismo.com.br/turquia-com-chios-21abr2027/","foto":"funil-r-turquia-com-chios-e-3-noites-na-capadocia.jpg","preco":{"completo":{"total":32474,"entrada":6494,"parcela":2165},"terrestre":{"total":21916,"entrada":4384,"parcela":1461}},"parecidos":["italia-do-norte-jul2027","dubai-jun2027","marrocos-mai2027"],"paises":"Turquia e Grécia"},{"slug":"europa-do-leste-cidades-imperiais-e-alemanha-23abr2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-04-23","data_txt":"23 de abril de 2027","dias":16,"link":"https://lieluturismo.com.br/europa-do-leste-cidades-imperiais-e-alemanha-23abr2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":39074,"entrada":7814,"parcela":2605},"terrestre":{"total":28185,"entrada":5637,"parcela":1879}},"parecidos":["croacia-eslovenia-bosnia-jun2027","tunisia-abr2027","italia-carnaval-veneza-2027"],"paises":"Áustria, Eslováquia, Hungria, Polônia, República Tcheca e Alemanha"},{"slug":"china-novos-encantos-25abr2027","roteiro":"Uma Mistura de China","destino":"china","data":"2027-04-25","data_txt":"25 de abril de 2027","dias":20,"link":"https://lieluturismo.com.br/china-novos-encantos-25abr2027/","foto":"funil-r-uma-mistura-de-china.jpg","preco":{"completo":{"total":57930,"entrada":11586,"parcela":3862},"terrestre":{"total":43650,"entrada":8730,"parcela":2910}},"parecidos":["japao-jul2027","suica-e-italia-mai2027","reino-unido-cafe-da-manha-jun2027"],"paises":"China"},{"slug":"coreia-do-sul-abr2027","roteiro":"Coreia do Sul","destino":"coreia","data":"2027-04-26","data_txt":"26 de abril de 2027","dias":16,"link":"https://lieluturismo.com.br/coreia-do-sul-abr2027/","foto":"funil-r-coreia-do-sul.jpg","preco":{"completo":{"total":59715,"entrada":11943,"parcela":3981},"terrestre":{"total":45749,"entrada":9149,"parcela":3050}},"parecidos":["japao-essencial-nas-cerejeiras-mar2027","espanha-do-sul-e-marrocos-mai2027","reino-unido-jun2027"],"paises":"Coreia do Sul"},{"slug":"espanha-do-sul-mai2027","roteiro":"Espanha do Sul","destino":"espanha","data":"2027-05-01","data_txt":"1 de maio de 2027","dias":14,"link":"https://lieluturismo.com.br/espanha-do-sul-mai2027/","foto":"funil-r-espanha-do-sul.jpg","preco":{"completo":{"total":37154,"entrada":7430,"parcela":2477},"terrestre":{"total":27346,"entrada":5470,"parcela":1823}},"parecidos":["europa-do-leste-01ago2027","croacia-abr2027","italia-do-sul-set2027"],"paises":"Espanha"},{"slug":"croacia-02mai2027","roteiro":"De Veneza a Dubrovnik","destino":"balcas","data":"2027-05-02","data_txt":"2 de maio de 2027","dias":14,"link":"https://lieluturismo.com.br/croacia-02mai2027/","foto":"funil-r-de-veneza-a-dubrovnik.jpg","preco":{"completo":{"total":37096,"entrada":7420,"parcela":2473},"terrestre":{"total":27780,"entrada":5556,"parcela":1852}},"parecidos":["europa-do-leste-jun2027","espanha-do-sul-set2027","italia-do-sul-set2027"],"paises":"Itália, Eslovênia, Croácia e Bósnia"},{"slug":"espanha-do-sul-e-marrocos-mai2027","roteiro":"Espanha do Sul e Marrocos","destino":"espanha","data":"2027-05-02","data_txt":"2 de maio de 2027","dias":23,"link":"https://lieluturismo.com.br/espanha-do-sul-e-marrocos-mai2027/","foto":"funil-r-espanha-do-sul-e-marrocos.jpg","preco":{"completo":{"total":56641,"entrada":11329,"parcela":3776},"terrestre":{"total":46184,"entrada":9236,"parcela":3079}},"parecidos":["japao-essencial-nas-cerejeiras-mar2027","coreia-do-sul-abr2027","reino-unido-jun2027"],"paises":"Espanha e Marrocos"},{"slug":"hol-ale-fra-lux-bel-03mai27","roteiro":"Keukenhof","destino":"holanda","data":"2027-05-03","data_txt":"3 de maio de 2027","dias":16,"link":"https://lieluturismo.com.br/hol-ale-fra-lux-bel-03mai27/","foto":"funil-r-keukenhof.jpg","preco":{"completo":{"total":41476,"entrada":8296,"parcela":2765},"terrestre":{"total":30915,"entrada":6183,"parcela":2061}},"parecidos":["6paises-abr2027","franca-jun2027","europa-do-leste-imperial-20jul2027"],"paises":"Holanda, Alemanha, França, Luxemburgo e Bélgica"},{"slug":"china-exuberante-05mai2027","roteiro":"China Exuberante (Flauta de Junco)","destino":"china","data":"2027-05-05","data_txt":"5 de maio de 2027","dias":21,"link":"https://lieluturismo.com.br/china-exuberante-05mai2027/","foto":"funil-r-china-exuberante-flauta-de-junco.jpg","preco":{"completo":{"total":63810,"entrada":12762,"parcela":4254},"terrestre":{"total":48226,"entrada":9646,"parcela":3215}},"parecidos":["espanha-do-sul-e-marrocos-mai2027","aurora-boreal-mar2027","escandinavia-set2027"],"paises":"China"},{"slug":"suica-mai2027","roteiro":"Suíça (Glacier Express)","destino":"suica","data":"2027-05-05","data_txt":"5 de maio de 2027","dias":15,"link":"https://lieluturismo.com.br/suica-mai2027/","foto":"funil-r-suica-glacier-express.jpg","preco":{"completo":{"total":52409,"entrada":10481,"parcela":3494},"terrestre":{"total":41849,"entrada":8369,"parcela":2790}},"parecidos":["coreia-do-sul-mai2027","reino-unido-cafe-da-manha-jun2027","china-mistura-16mar2027"],"paises":"Suíça"},{"slug":"europa-do-leste-mai2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-05-06","data_txt":"6 de maio de 2027","dias":16,"link":"https://lieluturismo.com.br/europa-do-leste-mai2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":37321,"entrada":7465,"parcela":2488},"terrestre":{"total":27270,"entrada":5454,"parcela":1818}},"parecidos":["croacia-abr2027","italia-do-sul-set2027","espanha-do-sul-mai2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, Polônia, República Tcheca"},{"slug":"turquia-com-chios-mai2027","roteiro":"Turquia com Chios","destino":"turquia","data":"2027-05-07","data_txt":"7 de maio de 2027","dias":13,"link":"https://lieluturismo.com.br/turquia-com-chios-mai2027/","foto":"funil-r-turquia-com-chios.jpg","preco":{"completo":{"total":31303,"entrada":6259,"parcela":2087},"terrestre":{"total":21196,"entrada":4240,"parcela":1413}},"parecidos":["italia-classica-ago2027","portugal-e-compostela-2027","dubai-jun2027"],"paises":"Turquia e Grécia"},{"slug":"encantos-da-italia-08mai2027","roteiro":"Encantos da Itália","destino":"italia","data":"2027-05-08","data_txt":"8 de maio de 2027","dias":13,"link":"https://lieluturismo.com.br/encantos-da-italia-08mai2027/","foto":"funil-r-encantos-da-italia.jpg","preco":{"completo":{"total":35220,"entrada":7044,"parcela":2348},"terrestre":{"total":25501,"entrada":5101,"parcela":1700}},"parecidos":["europa-do-leste-mar2027","espanha-do-sul-abr2027","turquia-com-chios-jul2027"],"paises":"Itália"},{"slug":"italia-do-norte-mai2027","roteiro":"Itália Clássica","destino":"italia","data":"2027-05-08","data_txt":"8 de maio de 2027","dias":13,"link":"https://lieluturismo.com.br/italia-do-norte-mai2027/","foto":"funil-r-italia-classica.jpg","preco":{"completo":{"total":32851,"entrada":6571,"parcela":2190},"terrestre":{"total":23144,"entrada":4628,"parcela":1543}},"parecidos":["turquia-e-chios-22mar2027","dubai-jun2027","marrocos-mai2027"],"paises":"Itália"},{"slug":"portugal-e-compostela-2027","roteiro":"Portugal com Compostela","destino":"portugal","data":"2027-05-08","data_txt":"8 de maio de 2027","dias":12,"link":"https://lieluturismo.com.br/portugal-e-compostela-2027/","foto":"funil-r-portugal-com-compostela.jpg","preco":{"completo":{"total":30120,"entrada":6024,"parcela":2008},"terrestre":{"total":19636,"entrada":3928,"parcela":1309}},"parecidos":["turquia-com-chios-17jun2027","italia-classica-ago2027","dubai-jun2027"],"paises":"Portugal e Espanha"},{"slug":"portugal-espanha-franca-e-andorra-2027","roteiro":"Portugal, Espanha, França e Andorra","destino":"portugal","data":"2027-05-09","data_txt":"9 de maio de 2027","dias":17,"link":"https://lieluturismo.com.br/portugal-espanha-franca-e-andorra-2027/","foto":"funil-r-portugal-espanha-franca-e-andorra.jpg","preco":{"completo":{"total":45240,"entrada":9048,"parcela":3016},"terrestre":{"total":34544,"entrada":6908,"parcela":2303}},"parecidos":["6paises-mai2027","china-continental-mai2027","grecia-mai2027"],"paises":"Portugal, Espanha, França e Andorra"},{"slug":"china-continental-mai2027","roteiro":"China Continental","destino":"china","data":"2027-05-10","data_txt":"10 de maio de 2027","dias":16,"link":"https://lieluturismo.com.br/china-continental-mai2027/","foto":"funil-r-china-continental.jpg","preco":{"completo":{"total":49304,"entrada":9860,"parcela":3287},"terrestre":{"total":34379,"entrada":6875,"parcela":2292}},"parecidos":["portugal-espanha-franca-e-andorra-2027","6paises-mai2027","grecia-abr2027"],"paises":"China"},{"slug":"coreia-do-sul-mai2027","roteiro":"Coreia do Sul","destino":"coreia","data":"2027-05-10","data_txt":"10 de maio de 2027","dias":16,"link":"https://lieluturismo.com.br/coreia-do-sul-mai2027/","foto":"funil-r-coreia-do-sul.jpg","preco":{"completo":{"total":54314,"entrada":10862,"parcela":3621},"terrestre":{"total":41249,"entrada":8249,"parcela":2750}},"parecidos":["china-mistura-16mar2027","suica-mai2027","tailandia-jan2027"],"paises":"Coreia do Sul"},{"slug":"europa-do-leste-imperial-12mai2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-05-12","data_txt":"12 de maio de 2027","dias":15,"link":"https://lieluturismo.com.br/europa-do-leste-imperial-12mai2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":37199,"entrada":7439,"parcela":2480},"terrestre":{"total":26311,"entrada":5263,"parcela":1754}},"parecidos":["italia-do-sul-abr2027","espanha-do-sul-abr2027","encantos-da-italia-08mai2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca"},{"slug":"suica-12mai2027","roteiro":"Suíça (Glacier Express)","destino":"suica","data":"2027-05-12","data_txt":"12 de maio de 2027","dias":15,"link":"https://lieluturismo.com.br/suica-12mai2027/","foto":"funil-r-suica-glacier-express.jpg","preco":{"completo":{"total":50984,"entrada":10196,"parcela":3399},"terrestre":{"total":40469,"entrada":8093,"parcela":2698}},"parecidos":["china-mistura-16mar2027","tailandia-jan2027","coreia-do-sul-mai2027"],"paises":"Suíça"},{"slug":"turquia-com-chios-12mai2027","roteiro":"Turquia com Chios e 3 noites na Capadócia","destino":"turquia","data":"2027-05-12","data_txt":"12 de maio de 2027","dias":14,"link":"https://lieluturismo.com.br/turquia-com-chios-12mai2027/","foto":"funil-r-turquia-com-chios-e-3-noites-na-capadocia.jpg","preco":{"completo":{"total":31695,"entrada":6339,"parcela":2113},"terrestre":{"total":21721,"entrada":4345,"parcela":1448}},"parecidos":["italia-classica-ago2027","dubai-jun2027","marrocos-mai2027"],"paises":"Turquia e Grécia"},{"slug":"grecia-mai2027","roteiro":"Atenas e Ilhas Gregas","destino":"grecia","data":"2027-05-15","data_txt":"15 de maio de 2027","dias":12,"link":"https://lieluturismo.com.br/grecia-mai2027/","foto":"funil-r-atenas-e-ilhas-gregas.jpg","preco":{"completo":{"total":45091,"entrada":9019,"parcela":3006},"terrestre":{"total":34994,"entrada":6998,"parcela":2333}},"parecidos":["6paises-mai2027","portugal-espanha-franca-e-andorra-2027","china-continental-mai2027"],"paises":"Grécia"},{"slug":"italia-do-sul-mai2027","roteiro":"Belezas do Sul da Itália","destino":"italia","data":"2027-05-16","data_txt":"16 de maio de 2027","dias":13,"link":"https://lieluturismo.com.br/italia-do-sul-mai2027/","foto":"funil-r-belezas-do-sul-da-italia.jpg","preco":{"completo":{"total":37065,"entrada":7413,"parcela":2471},"terrestre":{"total":27151,"entrada":5431,"parcela":1810}},"parecidos":["croacia-abr2027","europa-do-leste-mai2027","espanha-do-sul-08abr2027"],"paises":"Itália"},{"slug":"china-exuberante-19mai2027","roteiro":"China Exuberante","destino":"china","data":"2027-05-19","data_txt":"19 de maio de 2027","dias":19,"link":"https://lieluturismo.com.br/china-exuberante-19mai2027/","foto":"funil-r-china-exuberante.jpg","preco":{"completo":{"total":60719,"entrada":12143,"parcela":4048},"terrestre":{"total":47129,"entrada":9425,"parcela":3142}},"parecidos":["espanha-do-sul-e-marrocos-mai2027","japao-essencial-nas-cerejeiras-mar2027","coreia-do-sul-abr2027"],"paises":"China"},{"slug":"europa-do-leste-imperial-mai2027","roteiro":"Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-05-19","data_txt":"19 de maio de 2027","dias":14,"link":"https://lieluturismo.com.br/europa-do-leste-imperial-mai2027/","foto":"funil-r-europa-do-leste-cidades-imperiais.jpg","preco":{"completo":{"total":36600,"entrada":7320,"parcela":2440},"terrestre":{"total":25951,"entrada":5191,"parcela":1730}},"parecidos":["espanha-do-sul-abr2027","encantos-da-italia-08mai2027","italia-do-sul-abr2027"],"paises":"Áustria, Eslováquia, Hungria, Polônia e República Tcheca"},{"slug":"escandinavia-mai2027","roteiro":"Escandinávia","destino":"escandinavia","data":"2027-05-20","data_txt":"20 de maio de 2027","dias":19,"link":"https://lieluturismo.com.br/escandinavia-mai2027/","foto":"funil-r-escandinavia.jpg","preco":{"completo":{"total":64786,"entrada":12958,"parcela":4319},"terrestre":{"total":54704,"entrada":10940,"parcela":3647}},"parecidos":["japao-no-fim-das-cerejeiras-2027","espanha-do-sul-e-marrocos-2027","china-exuberante-chengdu-jun2027"],"paises":"Dinamarca, Noruega, Suécia e Finlândia"},{"slug":"6paises-mai2027","roteiro":"6 países","destino":"holanda","data":"2027-05-24","data_txt":"24 de maio de 2027","dias":17,"link":"https://lieluturismo.com.br/6paises-mai2027/","foto":"funil-r-6-paises.jpg","preco":{"completo":{"total":45390,"entrada":9078,"parcela":3026},"terrestre":{"total":34634,"entrada":6926,"parcela":2309}},"parecidos":["portugal-espanha-franca-e-andorra-2027","china-continental-mai2027","grecia-mai2027"],"paises":"Itália, Áustria, Suíça, França, Alemanha e Liechtenstein"},{"slug":"suica-e-italia-mai2027","roteiro":"Suíça e Itália (Bernina)","destino":"suica","data":"2027-05-26","data_txt":"26 de maio de 2027","dias":15,"link":"https://lieluturismo.com.br/suica-e-italia-mai2027/","foto":"funil-r-suica-e-italia-bernina.jpg","preco":{"completo":{"total":54824,"entrada":10964,"parcela":3655},"terrestre":{"total":44280,"entrada":8856,"parcela":2952}},"parecidos":["china-mistura-16set2027","japao-jul2027","reino-unido-jun2027"],"paises":"Suíça e Itália"},{"slug":"bulgaria-e-romenia-mai2027","roteiro":"Bulgária e Romênia","destino":"europa-do-leste","data":"2027-05-28","data_txt":"28 de maio de 2027","dias":17,"link":"https://lieluturismo.com.br/bulgaria-e-romenia-mai2027/","foto":"funil-r-bulgaria-e-romenia.jpg","preco":{"completo":{"total":41024,"entrada":8204,"parcela":2735},"terrestre":{"total":29294,"entrada":5858,"parcela":1953}},"parecidos":["croacia-set2027","keukenhof-01abr2027","italia-carnaval-veneza-2027"],"paises":"Bulgária e Romênia"},{"slug":"marrocos-mai2027","roteiro":"Marrocos","destino":"marrocos","data":"2027-05-30","data_txt":"30 de maio de 2027","dias":10,"link":"https://lieluturismo.com.br/marrocos-mai2027/","foto":"funil-r-marrocos.jpg","preco":{"completo":{"total":33390,"entrada":6678,"parcela":2226},"terrestre":{"total":23506,"entrada":4702,"parcela":1567}},"parecidos":["italia-do-sul-ago2027","dubai-jun2027","turquia-e-chios-22mar2027"],"paises":"Marrocos"},{"slug":"china-exuberante-chengdu-jun2027","roteiro":"China Exuberante com Chengdu","destino":"china","data":"2027-06-02","data_txt":"2 de junho de 2027","dias":22,"link":"https://lieluturismo.com.br/china-exuberante-chengdu-jun2027/","foto":"funil-r-china-exuberante-com-chengdu.jpg","preco":{"completo":{"total":66659,"entrada":13331,"parcela":4444},"terrestre":{"total":50534,"entrada":10106,"parcela":3369}},"parecidos":["escandinavia-set2027","aurora-boreal-mar2027","espanha-do-sul-e-marrocos-2027"],"paises":"China"},{"slug":"reino-unido-cafe-da-manha-jun2027","roteiro":"Grã-Bretanha","destino":"gra-bretanha","data":"2027-06-06","data_txt":"6 de junho de 2027","dias":17,"link":"https://lieluturismo.com.br/reino-unido-cafe-da-manha-jun2027/","foto":"funil-r-gra-bretanha.jpg","preco":{"completo":{"total":54539,"entrada":10907,"parcela":3636},"terrestre":{"total":42826,"entrada":8566,"parcela":2855}},"parecidos":["japao-jul2027","china-novos-encantos-25abr2027","suica-mai2027"],"paises":"Inglaterra, Escócia e País de Gales"},{"slug":"reino-unido-jun2027","roteiro":"Grã-Bretanha","destino":"gra-bretanha","data":"2027-06-06","data_txt":"6 de junho de 2027","dias":17,"link":"https://lieluturismo.com.br/reino-unido-jun2027/","foto":"funil-r-gra-bretanha.jpg","preco":{"completo":{"total":56985,"entrada":11397,"parcela":3799},"terrestre":{"total":45285,"entrada":9057,"parcela":3019}},"parecidos":["coreia-do-sul-abr2027","japao-essencial-nas-cerejeiras-mar2027","china-mistura-16set2027"],"paises":"Inglaterra, Escócia e País de Gales"},{"slug":"europa-do-leste-jun2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-06-09","data_txt":"9 de junho de 2027","dias":15,"link":"https://lieluturismo.com.br/europa-do-leste-jun2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":37485,"entrada":7497,"parcela":2499},"terrestre":{"total":27961,"entrada":5593,"parcela":1864}},"parecidos":["croacia-02mai2027","espanha-do-sul-set2027","italia-do-sul-set2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, Polônia, República Tcheca"},{"slug":"suica-09jun2027","roteiro":"Suíça (Glacier Express)","destino":"suica","data":"2027-06-09","data_txt":"9 de junho de 2027","dias":15,"link":"https://lieluturismo.com.br/suica-09jun2027/","foto":"funil-r-suica-glacier-express.jpg","preco":{"completo":{"total":48406,"entrada":9682,"parcela":3227},"terrestre":{"total":38610,"entrada":7722,"parcela":2574}},"parecidos":["grecia-ago2027","japao-seleto-23fev27","tailandia-jan2027"],"paises":"Suíça"},{"slug":"europa-do-leste-imperial-jun2027","roteiro":"Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-06-10","data_txt":"10 de junho de 2027","dias":14,"link":"https://lieluturismo.com.br/europa-do-leste-imperial-jun2027/","foto":"funil-r-europa-do-leste-cidades-imperiais.jpg","preco":{"completo":{"total":34514,"entrada":6902,"parcela":2301},"terrestre":{"total":24930,"entrada":4986,"parcela":1662}},"parecidos":["turquia-com-chios-jul2027","encantos-da-italia-08mai2027","espanha-do-sul-abr2027"],"paises":"Áustria, Eslováquia, Hungria, Polônia e República Tcheca"},{"slug":"dubai-jun2027","roteiro":"Emirados Árabes","destino":"emirados","data":"2027-06-11","data_txt":"11 de junho de 2027","dias":13,"link":"https://lieluturismo.com.br/dubai-jun2027/","foto":"funil-r-emirados-arabes.jpg","preco":{"completo":{"total":33780,"entrada":6756,"parcela":2252},"terrestre":{"total":23356,"entrada":4672,"parcela":1557}},"parecidos":["turquia-e-chios-22mar2027","italia-do-sul-ago2027","marrocos-mai2027"],"paises":"Dubai, Sharjah e Abu Dhabi"},{"slug":"escandinavia-jun2027","roteiro":"Escandinávia","destino":"escandinavia","data":"2027-06-11","data_txt":"11 de junho de 2027","dias":21,"link":"https://lieluturismo.com.br/escandinavia-jun2027/","foto":"funil-r-escandinavia.jpg","preco":{"completo":{"total":70229,"entrada":14045,"parcela":4682},"terrestre":{"total":59626,"entrada":11926,"parcela":3975}},"parecidos":["japao-nas-cerejeiras-20mar2027","espanha-do-sul-e-marrocos-2027","china-exuberante-chengdu-jun2027"],"paises":"Dinamarca, Noruega, Suécia e Finlândia"},{"slug":"grecia-jun2027","roteiro":"Atenas e Ilhas Gregas","destino":"grecia","data":"2027-06-11","data_txt":"11 de junho de 2027","dias":12,"link":"https://lieluturismo.com.br/grecia-jun2027/","foto":"funil-r-atenas-e-ilhas-gregas.jpg","preco":{"completo":{"total":48090,"entrada":9618,"parcela":3206},"terrestre":{"total":37964,"entrada":7592,"parcela":2531}},"parecidos":["suica-09jun2027","japao-seleto-23fev27","6paises-set2027"],"paises":"Grécia"},{"slug":"sul-da-italia-e-sicilia-jun2027","roteiro":"Maravilhas do Sul da Itália e Sicília","destino":"italia","data":"2027-06-14","data_txt":"14 de junho de 2027","dias":18,"link":"https://lieluturismo.com.br/sul-da-italia-e-sicilia-jun2027/","foto":"funil-r-maravilhas-do-sul-da-italia-e-sicilia.jpg","preco":{"completo":{"total":45030,"entrada":9006,"parcela":3002},"terrestre":{"total":35655,"entrada":7131,"parcela":2377}},"parecidos":["polonia-capitais-balticas-jul27","6paises-set2027","grecia-mai2027"],"paises":"Itália"},{"slug":"croacia-eslovenia-bosnia-jun2027","roteiro":"Croácia, Eslovênia e Bósnia","destino":"balcas","data":"2027-06-15","data_txt":"15 de junho de 2027","dias":13,"link":"https://lieluturismo.com.br/croacia-eslovenia-bosnia-jun2027/","foto":"funil-r-croacia-eslovenia-e-bosnia.jpg","preco":{"completo":{"total":37621,"entrada":7525,"parcela":2508},"terrestre":{"total":28216,"entrada":5644,"parcela":1881}},"parecidos":["europa-do-leste-cidades-imperiais-e-alemanha-23abr2027","tunisia-abr2027","italia-carnaval-veneza-2027"],"paises":""},{"slug":"franca-jun2027","roteiro":"França","destino":"franca","data":"2027-06-16","data_txt":"16 de junho de 2027","dias":14,"link":"https://lieluturismo.com.br/franca-jun2027/","foto":"https://lieluenzo.github.io/lielu-fotos-grupos/fotos/2024-10-franca.jpg","preco":{"completo":{"total":41549,"entrada":8309,"parcela":2770},"terrestre":{"total":30434,"entrada":6086,"parcela":2029}},"parecidos":["europa-do-leste-imperial-20jul2027","de-veneza-a-dubrovnik-ago2027","keukenhof-18abr2027"],"paises":""},{"slug":"turquia-com-chios-17jun2027","roteiro":"Turquia com Chios e 3 noites na Capadócia","destino":"turquia","data":"2027-06-17","data_txt":"17 de junho de 2027","dias":13,"link":"https://lieluturismo.com.br/turquia-com-chios-17jun2027/","foto":"funil-r-turquia-com-chios-e-3-noites-na-capadocia.jpg","preco":{"completo":{"total":30675,"entrada":6135,"parcela":2045},"terrestre":{"total":19890,"entrada":3978,"parcela":1326}},"parecidos":["portugal-e-compostela-2027","italia-classica-ago2027","dubai-jun2027"],"paises":"Turquia e Grécia"},{"slug":"italia-do-norte-montanhas-lagos-vinicolas-jun2027","roteiro":"Itália do Norte: Montanhas, Lagos e Vinícolas","destino":"italia","data":"2027-06-21","data_txt":"21 de junho de 2027","dias":11,"link":"https://lieluturismo.com.br/italia-do-norte-montanhas-lagos-vinicolas-jun2027/","foto":"funil-r-italia-do-norte-montanhas-lagos-e-vinicolas.jpg","preco":{"completo":{"total":32806,"entrada":6562,"parcela":2187},"terrestre":{"total":22755,"entrada":4551,"parcela":1517}},"parecidos":["turquia-com-chios-13abr2027","dubai-jun2027","marrocos-mai2027"],"paises":"Itália"},{"slug":"europa-do-leste-jul2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-07-01","data_txt":"1 de julho de 2027","dias":16,"link":"https://lieluturismo.com.br/europa-do-leste-jul2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":41595,"entrada":8319,"parcela":2773},"terrestre":{"total":29715,"entrada":5943,"parcela":1981}},"parecidos":["hol-ale-fra-lux-bel-abr27","keukenhof-01abr2027","de-veneza-a-dubrovnik-ago2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, Polônia, República Tcheca"},{"slug":"polonia-capitais-balticas-jul27","roteiro":"Polônia e Capitais Bálticas","destino":"europa-do-leste","data":"2027-07-04","data_txt":"4 de julho de 2027","dias":19,"link":"https://lieluturismo.com.br/polonia-capitais-balticas-jul27/","foto":"https://lieluenzo.github.io/lielu-fotos-grupos/fotos/2025-09-15-europa-do-leste-alf.jpg","preco":{"completo":{"total":47459,"entrada":9491,"parcela":3164},"terrestre":{"total":35985,"entrada":7197,"parcela":2399}},"parecidos":["6paises-set2027","sul-da-italia-e-sicilia-jun2027","grecia-mai2027"],"paises":""},{"slug":"grecia-jul2027","roteiro":"Atenas e Ilhas Gregas","destino":"grecia","data":"2027-07-05","data_txt":"5 de julho de 2027","dias":12,"link":"https://lieluturismo.com.br/grecia-jul2027/","foto":"funil-r-atenas-e-ilhas-gregas.jpg","preco":{"completo":{"total":50340,"entrada":10068,"parcela":3356},"terrestre":{"total":38506,"entrada":7702,"parcela":2567}},"parecidos":["suica-09jun2027","japao-seleto-23fev27","tailandia-jan2027"],"paises":"Grécia"},{"slug":"italia-do-norte-jul2027","roteiro":"Itália Clássica","destino":"italia","data":"2027-07-05","data_txt":"5 de julho de 2027","dias":12,"link":"https://lieluturismo.com.br/italia-do-norte-jul2027/","foto":"funil-r-italia-classica.jpg","preco":{"completo":{"total":33209,"entrada":6641,"parcela":2214},"terrestre":{"total":22141,"entrada":4429,"parcela":1476}},"parecidos":["turquia-com-chios-21abr2027","dubai-jun2027","marrocos-mai2027"],"paises":"Itália"},{"slug":"turquia-com-chios-jul2027","roteiro":"Turquia com Chios e Bodrum","destino":"turquia","data":"2027-07-06","data_txt":"6 de julho de 2027","dias":15,"link":"https://lieluturismo.com.br/turquia-com-chios-jul2027/","foto":"funil-r-turquia-com-chios-e-bodrum.jpg","preco":{"completo":{"total":39044,"entrada":7808,"parcela":2603},"terrestre":{"total":24435,"entrada":4887,"parcela":1629}},"parecidos":["europa-do-leste-imperial-21abr2027","marrocos-2027","italia-do-sul-ago2027"],"paises":"Turquia e Grécia"},{"slug":"japao-jul2027","roteiro":"Japão Essencial (verão)","destino":"japao","data":"2027-07-12","data_txt":"12 de julho de 2027","dias":15,"link":"https://lieluturismo.com.br/japao-jul2027/","foto":"funil-r-japao-essencial-verao.jpg","preco":{"completo":{"total":58064,"entrada":11612,"parcela":3871},"terrestre":{"total":43336,"entrada":8668,"parcela":2889}},"parecidos":["china-novos-encantos-25abr2027","reino-unido-cafe-da-manha-jun2027","suica-e-italia-mai2027"],"paises":"Japão"},{"slug":"escandinavia-jul2027","roteiro":"Escandinávia","destino":"escandinavia","data":"2027-07-19","data_txt":"19 de julho de 2027","dias":18,"link":"https://lieluturismo.com.br/escandinavia-jul2027/","foto":"funil-r-escandinavia.jpg","preco":{"completo":{"total":66120,"entrada":13224,"parcela":4408},"terrestre":{"total":55455,"entrada":11091,"parcela":3697}},"parecidos":["japao-no-fim-das-cerejeiras-2027","espanha-do-sul-e-marrocos-2027","china-exuberante-chengdu-jun2027"],"paises":"Dinamarca, Noruega, Suécia e Finlândia"},{"slug":"europa-do-leste-imperial-20jul2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-07-20","data_txt":"20 de julho de 2027","dias":15,"link":"https://lieluturismo.com.br/europa-do-leste-imperial-20jul2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":41521,"entrada":8305,"parcela":2768},"terrestre":{"total":30376,"entrada":6076,"parcela":2025}},"parecidos":["franca-jun2027","de-veneza-a-dubrovnik-ago2027","keukenhof-18abr2027"],"paises":"Áustria, Eslováquia, Hungria, Polônia, República Tcheca e Alemanha"},{"slug":"croacia-jul2027","roteiro":"De Veneza a Dubrovnik: Tesouros do Adriático e dos Bálcãs","destino":"balcas","data":"2027-07-25","data_txt":"25 de julho de 2027","dias":14,"link":"https://lieluturismo.com.br/croacia-jul2027/","foto":"funil-r-de-veneza-a-dubrovnik.jpg","preco":{"completo":{"total":42121,"entrada":8425,"parcela":2808},"terrestre":{"total":31816,"entrada":6364,"parcela":2121}},"parecidos":["egito-espetacular-abr2027","europa-do-leste-set2027","keukenhof-abr2027"],"paises":""},{"slug":"europa-do-leste-01ago2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-08-01","data_txt":"1 de agosto de 2027","dias":15,"link":"https://lieluturismo.com.br/europa-do-leste-01ago2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":36031,"entrada":7207,"parcela":2402},"terrestre":{"total":27300,"entrada":5460,"parcela":1820}},"parecidos":["croacia-abr2027","espanha-do-sul-mai2027","italia-do-sul-set2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, Polônia, República Tcheca"},{"slug":"escandinavia-ago2027","roteiro":"Escandinávia","destino":"escandinavia","data":"2027-08-02","data_txt":"2 de agosto de 2027","dias":19,"link":"https://lieluturismo.com.br/escandinavia-ago2027/","foto":"funil-r-escandinavia.jpg","preco":{"completo":{"total":61875,"entrada":12375,"parcela":4125},"terrestre":{"total":53189,"entrada":10637,"parcela":3546}},"parecidos":["japao-no-fim-das-cerejeiras-2027","espanha-do-sul-e-marrocos-2027","china-exuberante-chengdu-jun2027"],"paises":"Dinamarca, Noruega, Suécia e Finlândia"},{"slug":"suica-ago2027","roteiro":"Suíça (Glacier Express)","destino":"suica","data":"2027-08-03","data_txt":"3 de agosto de 2027","dias":14,"link":"https://lieluturismo.com.br/suica-ago2027/","foto":"funil-r-suica-glacier-express.jpg","preco":{"completo":{"total":48000,"entrada":9600,"parcela":3200},"terrestre":{"total":39781,"entrada":7957,"parcela":2652}},"parecidos":["tailandia-jan2027","china-mistura-16mar2027","japao-seleto-23fev27"],"paises":"Suíça"},{"slug":"turquia-com-chios-ago2027","roteiro":"Turquia com Chios","destino":"turquia","data":"2027-08-05","data_txt":"5 de agosto de 2027","dias":11,"link":"https://lieluturismo.com.br/turquia-com-chios-ago2027/","foto":"funil-r-turquia-com-chios.jpg","preco":{"completo":{"total":26834,"entrada":5366,"parcela":1789},"terrestre":{"total":17506,"entrada":3502,"parcela":1167}},"parecidos":["portugal-e-compostela-2027","italia-classica-ago2027","dubai-jun2027"],"paises":"Turquia e Grécia"},{"slug":"italia-classica-ago2027","roteiro":"Itália Clássica","destino":"italia","data":"2027-08-07","data_txt":"7 de agosto de 2027","dias":12,"link":"https://lieluturismo.com.br/italia-classica-ago2027/","foto":"funil-r-italia-classica.jpg","preco":{"completo":{"total":30436,"entrada":6088,"parcela":2029},"terrestre":{"total":21435,"entrada":4287,"parcela":1429}},"parecidos":["turquia-com-chios-mai2027","portugal-e-compostela-2027","dubai-jun2027"],"paises":"Itália"},{"slug":"de-veneza-a-dubrovnik-ago2027","roteiro":"De Veneza a Dubrovnik: Tesouros do Adriático e dos Bálcãs","destino":"balcas","data":"2027-08-09","data_txt":"9 de agosto de 2027","dias":13,"link":"https://lieluturismo.com.br/de-veneza-a-dubrovnik-ago2027/","foto":"funil-r-de-veneza-a-dubrovnik.jpg","preco":{"completo":{"total":39316,"entrada":7864,"parcela":2621},"terrestre":{"total":29955,"entrada":5991,"parcela":1997}},"parecidos":["keukenhof-18abr2027","hol-ale-fra-lux-bel-06abr27","europa-do-leste-06abr2027"],"paises":""},{"slug":"grecia-ago2027","roteiro":"Atenas e Ilhas Gregas","destino":"grecia","data":"2027-08-09","data_txt":"9 de agosto de 2027","dias":12,"link":"https://lieluturismo.com.br/grecia-ago2027/","foto":"funil-r-atenas-e-ilhas-gregas.jpg","preco":{"completo":{"total":48345,"entrada":9669,"parcela":3223},"terrestre":{"total":38641,"entrada":7729,"parcela":2576}},"parecidos":["suica-09jun2027","japao-seleto-23fev27","tailandia-jan2027"],"paises":"Grécia"},{"slug":"italia-do-sul-ago2027","roteiro":"Belezas do Sul da Itália","destino":"italia","data":"2027-08-11","data_txt":"11 de agosto de 2027","dias":11,"link":"https://lieluturismo.com.br/italia-do-sul-ago2027/","foto":"funil-r-belezas-do-sul-da-italia.jpg","preco":{"completo":{"total":31936,"entrada":6388,"parcela":2129},"terrestre":{"total":23401,"entrada":4681,"parcela":1560}},"parecidos":["dubai-jun2027","turquia-e-chios-22mar2027","marrocos-mai2027"],"paises":"Itália"},{"slug":"escandinavia-16ago2027","roteiro":"Escandinávia","destino":"escandinavia","data":"2027-08-16","data_txt":"16 de agosto de 2027","dias":19,"link":"https://lieluturismo.com.br/escandinavia-16ago2027/","foto":"funil-r-escandinavia.jpg","preco":{"completo":{"total":63359,"entrada":12671,"parcela":4224},"terrestre":{"total":52784,"entrada":10556,"parcela":3519}},"parecidos":["japao-no-fim-das-cerejeiras-2027","espanha-do-sul-e-marrocos-2027","china-exuberante-chengdu-jun2027"],"paises":"Dinamarca, Noruega, Suécia e Finlândia"},{"slug":"europa-do-leste-imperial-17ago2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-08-17","data_txt":"17 de agosto de 2027","dias":15,"link":"https://lieluturismo.com.br/europa-do-leste-imperial-17ago2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":37980,"entrada":7596,"parcela":2532},"terrestre":{"total":28140,"entrada":5628,"parcela":1876}},"parecidos":["croacia-eslovenia-bosnia-jun2027","espanha-do-sul-set2027","tunisia-abr2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, Polônia, República Tcheca"},{"slug":"turquia-com-chios-20ago2027","roteiro":"Turquia com Chios e 3 noites na Capadócia","destino":"turquia","data":"2027-08-20","data_txt":"20 de agosto de 2027","dias":13,"link":"https://lieluturismo.com.br/turquia-com-chios-20ago2027/","foto":"funil-r-turquia-com-chios-e-3-noites-na-capadocia.jpg","preco":{"completo":{"total":29625,"entrada":5925,"parcela":1975},"terrestre":{"total":18991,"entrada":3799,"parcela":1266}},"parecidos":["portugal-e-compostela-2027","italia-classica-ago2027","dubai-jun2027"],"paises":"Turquia e Grécia"},{"slug":"europa-do-leste-set2027","roteiro":"Alemanha, Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-09-07","data_txt":"7 de setembro de 2027","dias":16,"link":"https://lieluturismo.com.br/europa-do-leste-set2027/","foto":"funil-r-europa-do-leste.jpg","preco":{"completo":{"total":41896,"entrada":8380,"parcela":2793},"terrestre":{"total":31770,"entrada":6354,"parcela":2118}},"parecidos":["egito-espetacular-abr2027","croacia-jul2027","keukenhof-abr2027"],"paises":"Alemanha, Áustria, Eslováquia, Hungria, Polônia, República Tcheca"},{"slug":"6paises-set2027","roteiro":"6 países","destino":"holanda","data":"2027-09-12","data_txt":"12 de setembro de 2027","dias":17,"link":"https://lieluturismo.com.br/6paises-set2027/","foto":"funil-r-6-paises.jpg","preco":{"completo":{"total":47924,"entrada":9584,"parcela":3195},"terrestre":{"total":36241,"entrada":7249,"parcela":2416}},"parecidos":["polonia-capitais-balticas-jul27","sul-da-italia-e-sicilia-jun2027","grecia-mai2027"],"paises":"Itália, Áustria, Suíça, França, Alemanha e Liechtenstein"},{"slug":"china-exuberante-set2027","roteiro":"China Exuberante com Monte Fubo e Suzhou","destino":"china","data":"2027-09-13","data_txt":"13 de setembro de 2027","dias":21,"link":"https://lieluturismo.com.br/china-exuberante-set2027/","foto":"funil-r-china-exuberante.jpg","preco":{"completo":{"total":62011,"entrada":12403,"parcela":4134},"terrestre":{"total":47699,"entrada":9539,"parcela":3180}},"parecidos":["espanha-do-sul-e-marrocos-mai2027","japao-essencial-nas-cerejeiras-mar2027","coreia-do-sul-abr2027"],"paises":""},{"slug":"croacia-set2027","roteiro":"De Veneza a Dubrovnik: Tesouros do Adriático e dos Bálcãs","destino":"balcas","data":"2027-09-13","data_txt":"13 de setembro de 2027","dias":14,"link":"https://lieluturismo.com.br/croacia-set2027/","foto":"funil-r-de-veneza-a-dubrovnik.jpg","preco":{"completo":{"total":40109,"entrada":8021,"parcela":2674},"terrestre":{"total":29369,"entrada":5873,"parcela":1958}},"parecidos":["bulgaria-e-romenia-mai2027","keukenhof-01abr2027","hol-ale-fra-lux-bel-abr27"],"paises":""},{"slug":"europa-do-leste-imperial-set2027","roteiro":"Áustria, Eslováquia, Hungria, Polônia e República Tcheca","destino":"europa-do-leste","data":"2027-09-14","data_txt":"14 de setembro de 2027","dias":15,"link":"https://lieluturismo.com.br/europa-do-leste-imperial-set2027/","foto":"funil-r-europa-do-leste-cidades-imperiais.jpg","preco":{"completo":{"total":37409,"entrada":7481,"parcela":2494},"terrestre":{"total":27585,"entrada":5517,"parcela":1839}},"parecidos":["espanha-do-sul-set2027","croacia-02mai2027","italia-do-sul-set2027"],"paises":"Áustria, Eslováquia, Hungria, Polônia e República Tcheca"},{"slug":"italia-do-sul-set2027","roteiro":"Belezas do Sul da Itália","destino":"italia","data":"2027-09-15","data_txt":"15 de setembro de 2027","dias":12,"link":"https://lieluturismo.com.br/italia-do-sul-set2027/","foto":"funil-r-belezas-do-sul-da-italia.jpg","preco":{"completo":{"total":38010,"entrada":7602,"parcela":2534},"terrestre":{"total":27239,"entrada":5447,"parcela":1816}},"parecidos":["croacia-abr2027","europa-do-leste-mai2027","espanha-do-sul-mai2027"],"paises":"Itália"},{"slug":"china-mistura-16set2027","roteiro":"Uma Mistura de China","destino":"china","data":"2027-09-16","data_txt":"16 de setembro de 2027","dias":20,"link":"https://lieluturismo.com.br/china-mistura-16set2027/","foto":"funil-r-uma-mistura-de-china.jpg","preco":{"completo":{"total":59070,"entrada":11814,"parcela":3938},"terrestre":{"total":44431,"entrada":8887,"parcela":2962}},"parecidos":["suica-abr2027","reino-unido-jun2027","japao-jul2027"],"paises":"China"},{"slug":"espanha-do-sul-set2027","roteiro":"Espanha do Sul","destino":"espanha","data":"2027-09-20","data_txt":"20 de setembro de 2027","dias":14,"link":"https://lieluturismo.com.br/espanha-do-sul-set2027/","foto":"funil-r-espanha-do-sul.jpg","preco":{"completo":{"total":37441,"entrada":7489,"parcela":2496},"terrestre":{"total":27405,"entrada":5481,"parcela":1827}},"parecidos":["europa-do-leste-01ago2027","croacia-abr2027","italia-do-sul-set2027"],"paises":"Espanha"},{"slug":"china-novos-encantos-set2027","roteiro":"China Novos Encantos e Tesouros com Leshan e Zhujiajiao","destino":"china","data":"2027-09-21","data_txt":"21 de setembro de 2027","dias":21,"link":"https://lieluturismo.com.br/china-novos-encantos-set2027/","foto":"funil-r-china-novos-encantos-e-tesouros-leshan.jpg","preco":{"completo":{"total":57705,"entrada":11541,"parcela":3847},"terrestre":{"total":43756,"entrada":8752,"parcela":2917}},"parecidos":["japao-jul2027","suica-e-italia-mai2027","reino-unido-cafe-da-manha-jun2027"],"paises":""},{"slug":"escandinavia-set2027","roteiro":"Escandinávia","destino":"escandinavia","data":"2027-09-26","data_txt":"26 de setembro de 2027","dias":18,"link":"https://lieluturismo.com.br/escandinavia-set2027/","foto":"funil-r-escandinavia.jpg","preco":{"completo":{"total":59385,"entrada":11877,"parcela":3959},"terrestre":{"total":50549,"entrada":10109,"parcela":3370}},"parecidos":["china-exuberante-chengdu-jun2027","aurora-boreal-mar2027","espanha-do-sul-e-marrocos-2027"],"paises":"Dinamarca, Noruega, Suécia e Finlândia"},{"slug":"italia-classica-set2027","roteiro":"Itália Clássica","destino":"italia","data":"2027-09-27","data_txt":"27 de setembro de 2027","dias":12,"link":"https://lieluturismo.com.br/italia-classica-set2027/","foto":"funil-r-italia-classica.jpg","preco":{"completo":{"total":32566,"entrada":6514,"parcela":2171},"terrestre":{"total":23100,"entrada":4620,"parcela":1540}},"parecidos":["turquia-e-chios-22mar2027","dubai-jun2027","marrocos-mai2027"],"paises":"Itália"}]};
+  var FOTOS = {"viagens":[{"data":"2023-06","mes":"2023-06","chave":"egito","foto":"2023-06-egito-jordania-e-israel.jpg","viagem":"Egito Jordânia e Israel"},{"data":"2023-06","mes":"2023-06","chave":"gra-bretanha","foto":"2023-06-inglaterra.jpg","viagem":"Inglaterra"},{"data":"2023-09","mes":"2023-09","chave":"africa-do-sul","foto":"2023-09-africa-do-sul.jpg","viagem":"Africa do Sul"},{"data":"2023-09","mes":"2023-09","chave":"terra-santa","foto":"2023-09-libano-chipre-israel.jpg","viagem":"Líbano Chipre Israel"},{"data":"2023-10","mes":"2023-10","chave":"grecia","foto":"2023-10-atenas-e-ilhas-gregas.jpg","viagem":"Atenas e Ilhas Gregas"},{"data":"2023-10","mes":"2023-10","chave":"egito","foto":"2023-10-egito-espetacular-eliana.jpg","viagem":"Egito Espetacular - Eliana"},{"data":"2023-10","mes":"2023-10","chave":"egito","foto":"2023-10-egito-jord-e-ts-ilmar.jpg","viagem":"Egito Jord e TS - Ilmar"},{"data":"2023-10","mes":"2023-10","chave":"egito","foto":"2023-10-egito-jord-e-ts-tata.jpg","viagem":"Egito Jord e TS - Tata"},{"data":"2023-10","mes":"2023-10","chave":"franca","foto":"2023-10-franca-charmosa.jpg","viagem":"Franca Charmosa"},{"data":"2023-10","mes":"2023-10","chave":"italia","foto":"2023-10-italia-do-sul-pe-orozimbo.jpg","viagem":"Itália do sul pe orozimbo"},{"data":"2023-10","mes":"2023-10","chave":"portugal","foto":"2023-10-portugal-e-compostela.jpg","viagem":"Portugal e Compostela"},{"data":"2023-10","mes":"2023-10","chave":"turquia","foto":"2023-10-turquia-e-chios.jpg","viagem":"Turquia e Chios"},{"data":"2024-01-28","mes":"2024-01","chave":"tailandia","foto":"2024-01-28-tailandia.jpg","viagem":"Tailandia"},{"data":"2024-01-28","mes":"2024-01","chave":"tailandia","foto":"2024-01-28-tailandia-vietna-laos-e-camboja.jpg","viagem":"Tailandia Vietna Laos e Camboja"},{"data":"2024-02","mes":"2024-02","chave":"vietna","foto":"2024-02-vietna-laos-e-camboja-jr.jpg","viagem":"Vietna Laos e Camboja_JR"},{"data":"2024-02-21","mes":"2024-02","chave":"aurora-boreal","foto":"2024-02-21-aurora-boreal-tata.jpg","viagem":"Aurora Boreal Tata"},{"data":"2024-02-26","mes":"2024-02","chave":"aurora-boreal","foto":"2024-02-26-aurora-boreal-eliana.jpg","viagem":"Aurora Boreal Eliana"},{"data":"2024-03","mes":"2024-03","chave":"japao","foto":"2024-03-japao-jr.jpg","viagem":"japao jr"},{"data":"2024-03-11","mes":"2024-03","chave":"china","foto":"2024-03-11-china.jpg","viagem":"China"},{"data":"2024-03-23","mes":"2024-03","chave":"japao","foto":"2024-03-23-japao-eliana.jpg","viagem":"Japao Eliana"},{"data":"2024-04","mes":"2024-04","chave":"espanha","foto":"2024-04-espanha-do-sul.jpg","viagem":"Espanha do Sul"},{"data":"2024-04","mes":"2024-04","chave":"espanha","foto":"2024-04-espanha-do-sul-e-marrocos.jpg","viagem":"Espanha do Sul e Marrocos"},{"data":"2024-04","mes":"2024-04","chave":"italia","foto":"2024-04-italia-do-norte-salvi.jpg","viagem":"Italia do Norte Salvi"},{"data":"2024-04","mes":"2024-04","chave":"holanda","foto":"2024-04-keukenhof-roberto.jpg","viagem":"Keukenhof Roberto"},{"data":"2024-04","mes":"2024-04","chave":"holanda","foto":"2024-04-keukenhof-tata.jpg","viagem":"Keukenhof Tata"},{"data":"2024-04","mes":"2024-04","chave":"marrocos","foto":"2024-04-marrocos.jpg","viagem":"Marrocos"},{"data":"2024-04","mes":"2024-04","chave":"turquia","foto":"2024-04-turquia-e-chios.jpg","viagem":"Turquia e Chios"},{"data":"2024-05","mes":"2024-05","chave":"balcas","foto":"2024-05-eslovenia-croacia-bosnia-roberto.jpg","viagem":"Eslovénia Croacia Bosnia Roberto"},{"data":"2024-05","mes":"2024-05","chave":"balcas","foto":"2024-05-croacia-lucas.jpg","viagem":"Croacia - Lucas"},{"data":"2024-05","mes":"2024-05","chave":"egito","foto":"2024-05-egito-espetacular-s.jpg","viagem":"Egito Espetacular S"},{"data":"2024-05","mes":"2024-05","chave":"italia","foto":"2024-05-italia-do-norte-alf.jpg","viagem":"Italia do Norte Alf"},{"data":"2024-05","mes":"2024-05","chave":"portugal","foto":"2024-05-portugal-e-compostela.jpg","viagem":"Portugal e Compostela"},{"data":"2024-05","mes":"2024-05","chave":"portugal","foto":"2024-05-santuarios-marianos-ilmar.jpg","viagem":"Santuarios Marianos - Ilmar"},{"data":"2024-05","mes":"2024-05","chave":"suica","foto":"2024-05-suica-eliana.jpg","viagem":"Suiça Eliana"},{"data":"2024-05","mes":"2024-05","chave":"suica","foto":"2024-05-suica-jr.jpg","viagem":"Suíça JR"},{"data":"2024-06","mes":"2024-06","chave":"emirados","foto":"2024-06-dubai-giselle.jpg","viagem":"Dubai - Giselle"},{"data":"2024-06","mes":"2024-06","chave":"escandinavia","foto":"2024-06-escandinavia.jpg","viagem":"Escandinavia"},{"data":"2024-06","mes":"2024-06","chave":"europa-do-leste","foto":"2024-06-europa-do-lest-alf.jpg","viagem":"Europa do Lest Alf"},{"data":"2024-06","mes":"2024-06","chave":"europa-do-leste","foto":"2024-06-europa-do-leste-2-jr.jpg","viagem":"Europa do leste 2 JR"},{"data":"2024-06","mes":"2024-06","chave":"gra-bretanha","foto":"2024-06-inglaterra-tata.jpg","viagem":"Inglaterra - Tata"},{"data":"2024-06","mes":"2024-06","chave":"turquia","foto":"2024-06-turquia-e-chios-leo.jpg","viagem":"Turquia e Chios Leo"},{"data":"2024-07","mes":"2024-07","chave":"gra-bretanha","foto":"2024-07-inglaterra.jpg","viagem":"Inglaterra"},{"data":"2024-07","mes":"2024-07","chave":"italia","foto":"2024-07-italia-do-norte.jpg","viagem":"Itália do Norte"},{"data":"2024-07","mes":"2024-07","chave":"turquia","foto":"2024-07-turquia-e-chios-roberto.jpg","viagem":"Turquia e Chios Roberto"},{"data":"2024-08","mes":"2024-08","chave":"balcas","foto":"2024-08-eslovenia-croacia-roberto.jpg","viagem":"Eslovenia Croacia Roberto"},{"data":"2024-08","mes":"2024-08","chave":"europa-do-leste","foto":"2024-08-jr-leste-europeu-ago-2024.jpg","viagem":"Jr leste europeu Ago 2024"},{"data":"2024-08","mes":"2024-08","chave":"turquia","foto":"2024-08-turquia-com-chios-giselle.jpg","viagem":"Turquia com Chios - Giselle"},{"data":"2024-08-16","mes":"2024-08","chave":"escandinavia","foto":"2024-08-16-escandinavia.jpg","viagem":"Escandinavia"},{"data":"2024-08-18","mes":"2024-08","chave":"escandinavia","foto":"2024-08-18-escandinavia-tata.jpg","viagem":"Escandinavia Tata"},{"data":"2024-09","mes":"2024-09","chave":"grecia","foto":"2024-09-atenas-e-ilhas-gregas-roberto.jpg","viagem":"Atenas e Ilhas Gregas Roberto"},{"data":"2024-09","mes":"2024-09","chave":"africa-do-sul","foto":"2024-09-africa-do-sul.jpg","viagem":"Africa do Sul"},{"data":"2024-09","mes":"2024-09","chave":"escandinavia","foto":"2024-09-escandinavia-giselle.jpg","viagem":"Escandinavia_Giselle"},{"data":"2024-09","mes":"2024-09","chave":"turquia","foto":"2024-09-grecia-e-turquia.jpg","viagem":"Grecia e Turquia"},{"data":"2024-09","mes":"2024-09","chave":"india","foto":"2024-09-india-e-nepal-lisa.jpg","viagem":"India e Nepal - Lisa"},{"data":"2024-09","mes":"2024-09","chave":"italia","foto":"2024-09-italia-norte-alf.jpg","viagem":"Italia Norte_Alf"},{"data":"2024-09","mes":"2024-09","chave":"europa-do-leste","foto":"2024-09-leste-europeu-jr-set-2024.jpg","viagem":"Leste europeu jr set 2024"},{"data":"2024-09","mes":"2024-09","chave":"italia","foto":"2024-09-sul-da-italia-salvi.jpg","viagem":"Sul da Italia_Salvi"},{"data":"2024-09","mes":"2024-09","chave":"turquia","foto":"2024-09-turquia-salvi.jpg","viagem":"Turquia_Salvi"},{"data":"2024-10","mes":"2024-10","chave":"grecia","foto":"2024-10-atenas-com-ilhas-gregas-out-2024.jpg","viagem":"Atenas com ilhas gregas out 2024"},{"data":"2024-10","mes":"2024-10","chave":"balcas","foto":"2024-10-croacia-giselle.jpg","viagem":"Croácia_Giselle"},{"data":"2024-10","mes":"2024-10","chave":"franca","foto":"2024-10-franca.jpg","viagem":"Franca"},{"data":"2024-10","mes":"2024-10","chave":"italia","foto":"2024-10-italia-norte-alf.jpg","viagem":"Italia Norte_Alf"},{"data":"2024-11","mes":"2024-11","chave":"emirados","foto":"2024-11-dubai-giselle.jpg","viagem":"Dubai_Giselle"},{"data":"2024-11","mes":"2024-11","chave":"japao","foto":"2024-11-japao-no-outono-roberto.jpg","viagem":"Japão no Outono Roberto"},{"data":"2025-03-22","mes":"2025-03","chave":"china","foto":"2025-03-22-china-exuberante.jpg","viagem":"China Exuberante"},{"data":"2025-04-07","mes":"2025-04","chave":"holanda","foto":"2025-04-07-keukenhof-tata.jpg","viagem":"Keukenhof - Tata"},{"data":"2025-06","mes":"2025-06","chave":"gra-bretanha","foto":"2025-06-inglaterra-escocia-e-pais-de-gales.jpg","viagem":"Inglaterra Escócia e País de Gales"},{"data":"2025-06-02","mes":"2025-06","chave":"emirados","foto":"2025-06-02-dubai-giselle.jpg","viagem":"Dubai - Giselle"},{"data":"2025-06-05","mes":"2025-06","chave":"turquia","foto":"2025-06-05-turquia-com-chios-roberto.jpg","viagem":"Turquia com Chios Roberto"},{"data":"2025-06-05","mes":"2025-06","chave":"turquia","foto":"2025-06-05-grecia-e-turquia-juliana.jpg","viagem":"Grecia e Turquia - Juliana"},{"data":"2025-06-10","mes":"2025-06","chave":"europa-do-leste","foto":"2025-06-10-europa-do-leste-vitoria.jpg","viagem":"Europa do Leste - Vitória"},{"data":"2025-06-13","mes":"2025-06","chave":"balcas","foto":"2025-06-13-croacia-rodrigo.jpg","viagem":"Croacia Rodrigo"},{"data":"2025-06-15","mes":"2025-06","chave":"grecia","foto":"2025-06-15-atenas-e-ilhas-gregas-giselle.jpg","viagem":"Atenas e Ilhas Gregas - Giselle"},{"data":"2025-06-16","mes":"2025-06","chave":"escandinavia","foto":"2025-06-16-escandinavia.jpg","viagem":"Escandinavia"},{"data":"2025-06-18","mes":"2025-06","chave":"canada","foto":"2025-06-18-canada-roberto.jpg","viagem":"Canadá Roberto"},{"data":"2025-07-07","mes":"2025-07","chave":"turquia","foto":"2025-07-07-turquia-giselle.jpg","viagem":"Turquia - Giselle"},{"data":"2025-07-07","mes":"2025-07","chave":"italia","foto":"2025-07-07-italia-do-norte-rodrigo.jpg","viagem":"Italia do Norte Rodrigo"},{"data":"2025-07-09","mes":"2025-07","chave":"europa-do-leste","foto":"2025-07-09-europa-do-leste-alf.jpg","viagem":"Europa do Leste ALF"},{"data":"2025-08-11","mes":"2025-08","chave":"balcas","foto":"2025-08-11-croacia-giselle.jpg","viagem":"Croácia - Giselle"},{"data":"2025-08-12","mes":"2025-08","chave":"europa-do-leste","foto":"2025-08-12-europa-do-leste-alf.jpg","viagem":"Europa do Leste - ALF"},{"data":"2025-08-14","mes":"2025-08","chave":"europa-do-leste","foto":"2025-08-14-cidades-imperiais-vitoria.jpg","viagem":"Cidades Imperiais - Vitória"},{"data":"2025-08-17","mes":"2025-08","chave":"escandinavia","foto":"2025-08-17-escandinavia.jpg","viagem":"Escandinavia"},{"data":"2025-08-19","mes":"2025-08","chave":"suica","foto":"2025-08-19-suica.jpg","viagem":"Suica"},{"data":"2025-09-09","mes":"2025-09","chave":"suica","foto":"2025-09-09-suica-vitoria.jpg","viagem":"Suica - Vitória"},{"data":"2025-09-12","mes":"2025-09","chave":"turquia","foto":"2025-09-12-turquia-e-chios.jpg","viagem":"Turquia e Chios"},{"data":"2025-09-15","mes":"2025-09","chave":"europa-do-leste","foto":"2025-09-15-europa-do-leste-alf.jpg","viagem":"Europa do Leste Alf"},{"data":"2025-09-17","mes":"2025-09","chave":"balcas","foto":"2025-09-17-croacia-giselle.jpg","viagem":"Croácia - Giselle"},{"data":"2025-09-22","mes":"2025-09","chave":"india","foto":"2025-09-22-india-e-nepal-roberto.jpg","viagem":"Índia e Nepal Roberto"},{"data":"2025-09-23","mes":"2025-09","chave":"africa-do-sul","foto":"2025-09-23-africa-do-sul-jr.jpg","viagem":"Africa do Sul - JR"},{"data":"2025-09-27","mes":"2025-09","chave":"grecia","foto":"2025-09-27-atenas-e-ilhas-gregas-eliana.jpg","viagem":"Atenas e Ilhas Gregas_Eliana"},{"data":"2025-09-27","mes":"2025-09","chave":"grecia","foto":"2025-09-27-grecia-eterna-luciana.jpg","viagem":"Grecia Eterna - Luciana"},{"data":"2025-09-30","mes":"2025-09","chave":"italia","foto":"2025-09-30-sul-da-italia-vitoria.jpg","viagem":"Sul da Itália - Vitória"},{"data":"2025-10-04","mes":"2025-10","chave":"china","foto":"2025-10-04-china-tata.jpg","viagem":"China - Tata"},{"data":"2025-10-05","mes":"2025-10","chave":"italia","foto":"2025-10-05-italia-do-norte-alf.jpg","viagem":"Italia do Norte - Alf"},{"data":"2025-10-07","mes":"2025-10","chave":"gra-bretanha","foto":"2025-10-07-inglaterra-giselle.jpg","viagem":"Inglaterra - Giselle"},{"data":"2025-10-11","mes":"2025-10","chave":"balcas","foto":"2025-10-11-eslovenia-croacia-e-bosnia-roberto.jpg","viagem":"Eslovenia Croacia e Bósnia Roberto"},{"data":"2025-10-12","mes":"2025-10","chave":"turquia","foto":"2025-10-12-turquia-e-chios-eliana.jpg","viagem":"Turquia e Chios - Eliana"},{"data":"2025-10-19","mes":"2025-10","chave":"franca","foto":"2025-10-19-de-bordeaux-a-paris-luciana.jpg","viagem":"De Bordeaux a Paris - Luciana"},{"data":"2025-10-19","mes":"2025-10","chave":"europa-do-leste","foto":"2025-10-19-europa-do-leste-cidades-imperiais-vitoria.jpg","viagem":"Europa do Leste Cidades Imperiais - Vitória"},{"data":"2025-10-20","mes":"2025-10","chave":"marrocos","foto":"2025-10-20-marrocos-alf.jpg","viagem":"Marrocos-ALF"},{"data":"2025-10-22","mes":"2025-10","chave":"espanha","foto":"2025-10-22-espanha-do-sul-rodrigo.jpg","viagem":"Espanha do Sul_Rodrigo"},{"data":"2025-11-05","mes":"2025-11","chave":"tailandia","foto":"2025-11-05-tailandia-giselle.jpg","viagem":"Tailândia - Giselle"},{"data":"2025-11-05","mes":"2025-11","chave":"china","foto":"2025-11-05-china-continental-roberto.jpg","viagem":"China Continental Roberto"},{"data":"2025-11-07","mes":"2025-11","chave":"emirados","foto":"2025-11-07-dubai-vitoria.jpg","viagem":"Dubai - Vitória"},{"data":"2025-11-14","mes":"2025-11","chave":"europa-do-leste","foto":"2025-11-14-europa-do-leste-alf.jpg","viagem":"Europa do Leste - ALF"},{"data":"2025-11-15","mes":"2025-11","chave":"turquia","foto":"2025-11-15-turquia-e-chios-bia.jpg","viagem":"Turquia e Chios - Bia"},{"data":"2025-11-20","mes":"2025-11","chave":"japao","foto":"2025-11-20-japao-luciana.jpg","viagem":"Japao - Luciana"},{"data":"2026-03","mes":"2026-03","chave":"aurora-boreal","foto":"2026-03-aurora-boreal.jpg","viagem":"Aurora Boreal"},{"data":"2026-03","mes":"2026-03","chave":"europa-do-leste","foto":"2026-03-europa-do-leste-vitoria.jpg","viagem":"Europa do Leste_Vitoria"},{"data":"2026-03","mes":"2026-03","chave":"japao","foto":"2026-03-japao-eliana.jpg","viagem":"Japao_Eliana"},{"data":"2026-03-08","mes":"2026-03","chave":"turquia","foto":"2026-03-08-turquia-alf.jpg","viagem":"Turquia-ALF"},{"data":"2026-03-23","mes":"2026-03","chave":"china","foto":"2026-03-23-china-novos-encantos-e-tesouros-jr.jpg","viagem":"China Novos Encantos e Tesouros_JR"},{"data":"2026-03-24","mes":"2026-03","chave":"turquia","foto":"2026-03-24-turquia-alf.jpg","viagem":"Turquia- ALF"},{"data":"2026-04-04","mes":"2026-04","chave":"espanha","foto":"2026-04-04-espanha-do-sul-roberto.jpg","viagem":"Espanha do Sul Roberto"},{"data":"2026-04-04","mes":"2026-04","chave":"espanha","foto":"2026-04-04-espanha-do-sul-e-marrocos-thiago.jpg","viagem":"Espanha do Sul e Marrocos - Thiago"},{"data":"2026-04-04","mes":"2026-04","chave":"holanda","foto":"2026-04-04-keukenhof-jose-junior.jpg","viagem":"Keukenhof - Jose Junior"},{"data":"2026-04-04","mes":"2026-04","chave":"holanda","foto":"2026-04-04-hol-alem-fran-lux-bel-giselle.jpg","viagem":"Hol-Alem-Fran-Lux-Bel_Giselle"},{"data":"2026-04-08","mes":"2026-04","chave":"japao","foto":"2026-04-08-japao-tata.jpg","viagem":"Japao - Tata"},{"data":"2026-04-09","mes":"2026-04","chave":"holanda","foto":"2026-04-09-keukenhof-vitoria.jpg","viagem":"Keukenhof - Vitoria"},{"data":"2026-04-16","mes":"2026-04","chave":"europa-do-leste","foto":"2026-04-16-cidades-imperiais-alf.jpg","viagem":"Cidades Imperiais _ALF"},{"data":"2026-04-23","mes":"2026-04","chave":"tunisia","foto":"2026-04-23-tunisia-pe-rodrigo.jpg","viagem":"Tunisia - Pe Rodrigo"},{"data":"2026-04-26","mes":"2026-04","chave":"italia","foto":"2026-04-26-italia-do-norte-vitoria.jpg","viagem":"Italia do Norte - Vitoria"},{"data":"2026-05-04","mes":"2026-05","chave":"holanda","foto":"2026-05-04-keukenhof-roberto.jpg","viagem":"Keukenhof Roberto"},{"data":"2026-05-04","mes":"2026-05","chave":"coreia","foto":"2026-05-04-coreia-do-sul-angelica.jpg","viagem":"Coreia do Sul - Angelica"},{"data":"2026-05-04","mes":"2026-05","chave":"turquia","foto":"2026-05-04-turquia-giselle.jpg","viagem":"Turquia - Giselle"},{"data":"2026-05-05","mes":"2026-05","chave":"suica","foto":"2026-05-05-suica-eliana.jpg","viagem":"Suica_Eliana"},{"data":"2026-05-06","mes":"2026-05","chave":"europa-do-leste","foto":"2026-05-06-europa-do-leste-imperial-jose-junior.jpg","viagem":"Europa do Leste Imperial - Jose Junior"},{"data":"2026-05-07","mes":"2026-05","chave":"china","foto":"2026-05-07-china-slower-travel-tata.jpg","viagem":"China Slower Travel - Tata"},{"data":"2026-05-07","mes":"2026-05","chave":"suica","foto":"2026-05-07-italia-austria-suica-franca-alemanha-e-lichtenstein-giovana.jpg","viagem":"Italia Austria Suica Franca Alemanha e Lichtenstein - Giovana"},{"data":"2026-05-09","mes":"2026-05","chave":"portugal","foto":"2026-05-09-sant-marianos-pe-ilmar.jpg","viagem":"Sant Marianos - Pe Ilmar"},{"data":"2026-05-11","mes":"2026-05","chave":"grecia","foto":"2026-05-11-atenas-e-ilhas-gregas-beatriz.jpg","viagem":"Atenas e Ilhas Gregas - Beatriz"},{"data":"2026-05-11","mes":"2026-05","chave":"italia","foto":"2026-05-11-italia-do-sul-alf.jpg","viagem":"Italia do Sul-ALF"},{"data":"2026-05-12","mes":"2026-05","chave":"italia","foto":"2026-05-12-italia-do-norte-luciana.jpg","viagem":"Italia do Norte - Luciana"},{"data":"2026-05-13","mes":"2026-05","chave":"china","foto":"2026-05-13-china-exuberante-caverna-da-flauta-de-junto.jpg","viagem":"China Exuberante - Caverna da Flauta de Junto"},{"data":"2026-05-13","mes":"2026-05","chave":"balcas","foto":"2026-05-13-veneza-eslovenia-croacia-e-bosnia-thiago.jpg","viagem":"Veneza Eslovenia Croacia e Bosnia - Thiago"},{"data":"2026-05-14","mes":"2026-05","chave":"japao","foto":"2026-05-14-japao-essencial-eduardo.jpg","viagem":"Japao Essencial - Eduardo"},{"data":"2026-05-18","mes":"2026-05","chave":"italia","foto":"2026-05-18-sul-da-italia-giselle.jpg","viagem":"Sul da Itália - Giselle"},{"data":"2026-05-19","mes":"2026-05","chave":"europa-do-leste","foto":"2026-05-19-europa-de-leste-roberto.jpg","viagem":"Europa de Leste Roberto"},{"data":"2026-05-24","mes":"2026-05","chave":"china","foto":"2026-05-24-china-alf.jpg","viagem":"China_ Alf"},{"data":"2026-06-02","mes":"2026-06","chave":"europa-do-leste","foto":"2026-06-02-europa-do-leste-giselle.jpg","viagem":"Europa do Leste - Giselle"},{"data":"2026-06-05","mes":"2026-06","chave":"china","foto":"2026-06-05-china-slower-travel-roberto.jpg","viagem":"China Slower Travel Roberto"},{"data":"2026-06-09","mes":"2026-06","chave":"gra-bretanha","foto":"2026-06-09-inglaterra-escocia-e-pais-de-gales-joana.jpg","viagem":"Inglaterra Escocia e Pais de Gales - Joana"},{"data":"2026-06-09","mes":"2026-06","chave":"suica","foto":"2026-06-09-suica-com-trem-glacier-express.jpg","viagem":"Suica com Trem Glacier Express"},{"data":"2026-06-10","mes":"2026-06","chave":"europa-do-leste","foto":"2026-06-10-cidades-imperiais-alf.jpg","viagem":"Cidades Imperiais_ALF"},{"data":"2026-06-11","mes":"2026-06","chave":"turquia","foto":"2026-06-11-turquia-angelica.jpg","viagem":"Turquia - Angelica"},{"data":"2026-06-15","mes":"2026-06","chave":"grecia","foto":"2026-06-15-atenas-e-ilhas-gregas-beatriz.jpg","viagem":"Atenas e Ilhas Gregas - Beatriz"},{"data":"2026-06-15","mes":"2026-06","chave":"escandinavia","foto":"2026-06-15-escandinavia.jpg","viagem":"Escandinavia"},{"data":"2026-06-17","mes":"2026-06","chave":"italia","foto":"2026-06-17-italia-do-norte-giovana.jpg","viagem":"Italia do Norte - Giovana"},{"data":"2026-06-17","mes":"2026-06","chave":"italia","foto":"2026-06-17-sul-da-italia-eduardo.jpg","viagem":"Sul da Italia - Eduardo"},{"data":"2026-06-17","mes":"2026-06","chave":"turquia","foto":"2026-06-17-turquia-e-chios-alexandre.jpg","viagem":"Turquia e Chios - Alexandre"},{"data":"2026-06-23","mes":"2026-06","chave":"europa-do-leste","foto":"2026-06-23-europa-do-leste-thiago.jpg","viagem":"Europa do Leste - Thiago"},{"data":"2026-07-01","mes":"2026-07","chave":"europa-do-leste","foto":"2026-07-01-europa-leste-roberto.jpg","viagem":"Europa Leste Roberto"},{"data":"2026-07-02","mes":"2026-07","chave":"italia","foto":"2026-07-02-italia-do-norte-vitoria.jpg","viagem":"Itália do Norte - Vitória"},{"data":"2026-07-07","mes":"2026-07","chave":"balcas","foto":"2026-07-07-veneza-eslovenia-croacia-e-bosnia-alf.jpg","viagem":"Veneza, Eslovênia, Croácia e Bósnia_ALF"},{"data":"2026-07-08","mes":"2026-07","chave":"turquia","foto":"2026-07-08-turquia-e-chios-gustavo.jpg","viagem":"Turquia e Chios - Gustavo"},{"data":"2026-07-15","mes":"2026-07","chave":"europa-do-leste","foto":"2026-07-15-europa-do-leste-thiago.jpg","viagem":"Europa do Leste - Thiago"},{"data":"2026-08-04","mes":"2026-08","chave":"italia","foto":"2026-08-04-italia-do-norte-joao.jpg","viagem":"Italia do Norte - Joao"},{"data":"2026-08-07","mes":"2026-08","chave":"turquia","foto":"2026-08-07-turquia-e-chios-beatriz.jpg","viagem":"Turquia e Chios - Beatriz"},{"data":"2026-08-17","mes":"2026-08","chave":"escandinavia","foto":"2026-08-17-escandinavia-junior.jpg","viagem":"Escandinavia - Junior"},{"data":"2026-08-17","mes":"2026-08","chave":"europa-do-leste","foto":"2026-08-17-cidades-imperiais-alf.jpg","viagem":"Cidades Imperiais _ALF"},{"data":"2026-08-18","mes":"2026-08","chave":"escandinavia","foto":"2026-08-18-escandinavia-vitoria.jpg","viagem":"Escandinavia - Vitoria"},{"data":"2026-08-18","mes":"2026-08","chave":"europa-do-leste","foto":"2026-08-18-europa-do-leste-thiago.jpg","viagem":"Europa do Leste - Thiago"},{"data":"2026-08-24","mes":"2026-08","chave":"italia","foto":"2026-08-24-sul-da-italia-giovanna.jpg","viagem":"Sul da Italia - Giovanna"},{"data":"2026-08-25","mes":"2026-08","chave":"suica","foto":"2026-08-25-suica-com-trem-roberto.jpg","viagem":"Suíça com Trem Roberto"},{"data":"2026-08-28","mes":"2026-08","chave":"turquia","foto":"2026-08-28-turquia-e-chios-angelica.jpg","viagem":"Turquia e Chios - Angelica"},{"data":"2026-09-01","mes":"2026-09","chave":"europa-do-leste","foto":"2026-09-01-europa-do-leste-alf.jpg","viagem":"Europa do Leste_ALF"},{"data":"2026-09-09","mes":"2026-09","chave":"europa-do-leste","foto":"2026-09-09-europa-do-leste-eduardo.jpg","viagem":"Europa do Leste - Eduardo"},{"data":"2026-09-12","mes":"2026-09","chave":"italia","foto":"2026-09-12-veneza-eslo-croa-e-bosvia-herminio.jpg","viagem":"Veneza Eslo Croa e Bosvia - Herminio"},{"data":"2026-09-15","mes":"2026-09","chave":"holanda","foto":"2026-09-15-paises-giovana.jpg","viagem":"paises - Giovana"},{"data":"2026-09-15","mes":"2026-09","chave":"grecia","foto":"2026-09-15-atenas-e-ilhas-gregas-beatriz.jpg","viagem":"Atenas e Ilhas Gregas - Beatriz"},{"data":"2026-09-15","mes":"2026-09","chave":"coreia","foto":"2026-09-15-coreia-do-sul-luciana.jpg","viagem":"Coreia do Sul - Luciana"},{"data":"2026-09-16","mes":"2026-09","chave":"suica","foto":"2026-09-16-suica-e-italia-angelica.jpg","viagem":"Suica e Italia - Angelica"},{"data":"2026-09-18","mes":"2026-09","chave":"escandinavia","foto":"2026-09-18-escandinavia-junior.jpg","viagem":"Escandinavia - Junior"},{"data":"2026-09-19","mes":"2026-09","chave":"espanha","foto":"2026-09-19-espanha-do-sul-rodrigo-santanna.jpg","viagem":"Espanha do Sul - Rodrigo SantAnna"},{"data":"2026-09-19","mes":"2026-09","chave":"gra-bretanha","foto":"2026-09-19-inglaterra-alf.jpg","viagem":"Inglaterra_AlF"},{"data":"2026-09-19","mes":"2026-09","chave":"italia","foto":"2026-09-19-sul-da-italia-thiago.jpg","viagem":"Sul da Italia - Thiago"},{"data":"2026-09-21","mes":"2026-09","chave":"india","foto":"2026-09-21-india-e-nepal-roberto.jpg","viagem":"Índia e Nepal Roberto"},{"data":"2026-09-21","mes":"2026-09","chave":"china","foto":"2026-09-21-china-exuberante-vitoria.jpg","viagem":"China Exuberante - Vitoria"},{"data":"2026-09-24","mes":"2026-09","chave":"egito","foto":"2026-09-24-egito-espetacular-ilmar.jpg","viagem":"Egito Espetacular - Ilmar"},{"data":"2026-09-28","mes":"2026-09","chave":"turquia","foto":"2026-09-28-turquia-e-chios-gustavo.jpg","viagem":"Turquia e Chios - Gustavo"},{"data":"2026-10-03","mes":"2026-10","chave":"grecia","foto":"2026-10-03-grecia-eterna-patricia.jpg","viagem":"Grecia Eterna - Patricia"},{"data":"2026-10-04","mes":"2026-10","chave":"turquia","foto":"2026-10-04-turquia-e-chios-thiago.jpg","viagem":"Turquia e Chios - Thiago"},{"data":"2026-10-05","mes":"2026-10","chave":"gra-bretanha","foto":"2026-10-05-reino-unido-jose-vitor.jpg","viagem":"Reino Unido - Jose Vitor"},{"data":"2026-10-08","mes":"2026-10","chave":"china","foto":"2026-10-08-china-alf.jpg","viagem":"China_ALF"},{"data":"2026-10-10","mes":"2026-10","chave":"europa-do-leste","foto":"2026-10-10-bulgaria-e-romenia-roberto.jpg","viagem":"Bulgária e Romenia Roberto"},{"data":"2026-10-16","mes":"2026-10","chave":"turquia","foto":"2026-10-16-turquia-e-chios-vitoria.jpg","viagem":"Turquia e Chios - Vitoria"},{"data":"2026-10-18","mes":"2026-10","chave":"suica","foto":"2026-10-18-suica-e-italia-giovana.jpg","viagem":"Suica e Italia - Giovana"},{"data":"2026-10-20","mes":"2026-10","chave":"marrocos","foto":"2026-10-20-marrocos-eliana.jpg","viagem":"Marrocos - Eliana"},{"data":"2026-10-21","mes":"2026-10","chave":"espanha","foto":"2026-10-21-espanha-do-sul-thiago-caetano.jpg","viagem":"Espanha do Sul - Thiago Caetano"},{"data":"2026-10-22","mes":"2026-10","chave":"franca","foto":"2026-10-22-de-bordeaux-a-paris-angelica.jpg","viagem":"De Bordeaux a Paris - Angelica"},{"data":"2026-11-01","mes":"2026-11","chave":"turquia","foto":"2026-11-01-turquia-e-chios-beatriz.jpg","viagem":"Turquia e Chios - Beatriz"},{"data":"2026-11-04","mes":"2026-11","chave":"china","foto":"2026-11-04-china-continental-alf.jpg","viagem":"China Continental _ALF"},{"data":"2026-11-05","mes":"2026-11","chave":"aurora-boreal","foto":"2026-11-05-aurora-boreal-roberto.jpg","viagem":"Aurora Boreal Roberto"},{"data":"2026-11-15","mes":"2026-11","chave":"tunisia","foto":"2026-11-15-tunisia-gustavo.jpg","viagem":"Tunisia - Gustavo"}]};   // índice embutido da fábrica de fotos (a página tenta o do dia ao abrir)
+
+  /* ---------- dados ---------- */
+  var SAIDA = {}, POR_DESTINO = {}, NOME_DESTINO = {};
+  DADOS.saidas.forEach(function (s) {
+    SAIDA[s.slug] = s;
+    (POR_DESTINO[s.destino] = POR_DESTINO[s.destino] || []).push(s);
+  });
+  DADOS.destinos.forEach(function (d) { NOME_DESTINO[d.chave] = d.nome; });
+  var POR_ROTEIRO = {};
+  DADOS.saidas.forEach(function (s) { (POR_ROTEIRO[s.roteiro] = POR_ROTEIRO[s.roteiro] || []).push(s); });
+  var MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  // bandeiras (flagcdn.com, domínio público); destino de vários países mostra até 3
+  var BANDEIRAS = {
+    'aurora-boreal': ['no'], china: ['cn'], coreia: ['kr'], balcas: ['hr', 'si', 'ba'], egito: ['eg'], emirados: ['ae'],
+    escandinavia: ['no', 'se', 'dk'], espanha: ['es'], 'europa-do-leste': ['cz', 'hu', 'at'], franca: ['fr'],
+    'gra-bretanha': ['gb'], grecia: ['gr'], holanda: ['nl'], italia: ['it'], japao: ['jp'], marrocos: ['ma'],
+    portugal: ['pt'], suica: ['ch'], tailandia: ['th'], tunisia: ['tn'], turquia: ['tr']
+  };
+  // RESERVA de "parecidos" por região (só se o n8n não mandar a lista do C-3PO). A lista oficial é do C-3PO.
+  var VIZINHOS = {
+    italia: ['grecia', 'balcas', 'portugal', 'suica'], turquia: ['grecia', 'egito', 'marrocos', 'emirados'],
+    'europa-do-leste': ['balcas', 'suica', 'italia'], grecia: ['turquia', 'italia', 'balcas'],
+    suica: ['italia', 'europa-do-leste', 'franca'], china: ['japao', 'coreia', 'tailandia'],
+    japao: ['coreia', 'china', 'tailandia'], coreia: ['japao', 'china'], tailandia: ['japao', 'china'],
+    espanha: ['portugal', 'marrocos', 'italia'], portugal: ['espanha', 'italia', 'franca'],
+    marrocos: ['espanha', 'egito', 'tunisia'], egito: ['turquia', 'emirados', 'marrocos'],
+    emirados: ['egito', 'turquia'], tunisia: ['marrocos', 'egito'], franca: ['italia', 'suica', 'holanda'],
+    'gra-bretanha': ['holanda', 'franca'], holanda: ['gra-bretanha', 'franca', 'europa-do-leste'],
+    balcas: ['italia', 'grecia', 'europa-do-leste'], escandinavia: ['aurora-boreal', 'holanda'],
+    'aurora-boreal': ['escandinavia', 'holanda']
+  };
+
+  /* ---------- utilidades ---------- */
+  var raiz = document.getElementById('pc');
+  if (!raiz) return;
+  function $(s, el) { return (el || raiz).querySelector(s); }
+  function $$(s, el) { return Array.prototype.slice.call((el || raiz).querySelectorAll(s)); }
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function log() { if (window.console) console.log.apply(console, ['[prata-da-casa]'].concat([].slice.call(arguments))); }
+  function brl(n) { return 'R$ ' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+  function capitaliza(t) {
+    return String(t || '').toLowerCase().replace(/(^|\s)(\S)/g, function (m, a, b) { return a + b.toUpperCase(); })
+      .replace(/\s(Da|De|Do|Das|Dos|E)(?=\s)/g, function (m) { return m.toLowerCase(); });
+  }
+  function juntaE(lista) {
+    if (lista.length < 2) return lista.join('');
+    return lista.slice(0, -1).join(', ') + ' e ' + lista[lista.length - 1];
+  }
+
+  /* ---------- tamanho (Elementor) ---------- */
+  function medir() {
+    raiz.style.setProperty('--lp-vw', document.documentElement.clientWidth + 'px');
+    raiz.style.setProperty('--alt', window.innerHeight + 'px');
+  }
+  medir();
+  window.addEventListener('resize', medir);
+  if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) raiz.classList.add('pc-anim');
+
+  /* ---------- link do anúncio e campos escondidos ---------- */
+  var Q = {};
+  (location.search || '').replace(/^\?/, '').split('&').forEach(function (p) {
+    if (!p) return;
+    var i = p.indexOf('='), k = decodeURIComponent(i < 0 ? p : p.slice(0, i)), v = i < 0 ? '' : p.slice(i + 1);
+    try { v = decodeURIComponent(v.replace(/\+/g, ' ')); } catch (e) {}
+    Q[k] = v;
+  });
+  var destinoAnuncio = (Q.destino || '').toLowerCase().trim();
+  if (!POR_DESTINO[destinoAnuncio]) destinoAnuncio = '';
+  var campos = {};
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid'].forEach(function (k) {
+    try {
+      if (Q[k]) sessionStorage.setItem('pc_' + k, Q[k]);
+      campos[k] = Q[k] || sessionStorage.getItem('pc_' + k) || '';
+    } catch (e) { campos[k] = Q[k] || ''; }
+  });
+  function cookie(n) { var m = document.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : ''; }
+  campos.fbp = cookie('_fbp');
+  campos.fbc = cookie('_fbc') || (campos.fbclid ? 'fb.1.' + Date.now() + '.' + campos.fbclid : '');
+  var sessaoId = 'pc-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+
+  /* ---------- medição (GA4 + Meta), igual ao Tipo de Viajante ---------- */
+  function camada() { if (!window.dataLayer) window.dataLayer = []; return window.dataLayer; }
+  camada();
+  if (typeof window.gtag !== 'function') { window.gtag = function () { camada().push(arguments); }; }
+  var EDITOR = /[?&](elementor-preview|preview)=/.test(location.search) || document.body.classList.contains('elementor-editor-active');
+  var LOCAL = (EDITOR || /^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost|.+\.test)$/.test(location.hostname)) && !/[?&]tags=1/.test(location.search);
+  function ga4Lista() { return LOCAL ? [] : [].concat(CONFIG.ga4 || []).filter(function (id) { return /^G-[A-Z0-9]{6,}$/.test(id); }); }
+  function metaOk() { return !LOCAL && /^\d{10,20}$/.test(CONFIG.metaPixel || ''); }
+  (function carregarTags() {
+    var jsEnviado = camada().some(function (a) { return a && a[0] === 'js'; });
+    ga4Lista().forEach(function (id) {
+      if (document.querySelector('script[src*="gtag/js?id=' + id + '"]') || camada().some(function (a) { return a && a[0] === 'config' && a[1] === id; })) return;
+      var sc = document.createElement('script'); sc.async = true; sc.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+      document.head.appendChild(sc);
+      if (!jsEnviado) { window.gtag('js', new Date()); jsEnviado = true; }
+      window.gtag('config', id);
+    });
+  })();
+  var filaMeta = [];
+  function meta() {
+    if (!metaOk()) return;
+    var args = [].slice.call(arguments);
+    if (typeof window.fbq === 'function') window.fbq.apply(window, args); else filaMeta.push(args);
+  }
+  (function carregarMeta() {
+    if (!metaOk()) return;
+    var instalar = function () {
+      if (!window.fbq && !document.querySelector('script[src*="connect.facebook.net"], script[src*="pixelyoursite"]')) {
+        (function (f, b, e, v, n, t, x) {
+          if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+          if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = true;
+          t.src = v; x = b.getElementsByTagName(e)[0]; x.parentNode.insertBefore(t, x);
+        })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+        window.fbq('init', CONFIG.metaPixel);
+        window.fbq('track', 'PageView');
+      }
+      var fila = filaMeta; filaMeta = [];
+      fila.forEach(function (a) { meta.apply(null, a); });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', instalar); else instalar();
+  })();
+  window.__pcEventos = [];
+  function evento(nome, dados) {
+    dados = dados || {}; dados.sessao_id = sessaoId; dados.funil_versao = 'v16';
+    window.__pcEventos.push({ nome: nome, dados: dados });
+    camada().push(Object.assign ? Object.assign({ event: nome }, dados) : { event: nome });
+    ga4Lista().forEach(function (id) { var d = {}; for (var k in dados) d[k] = dados[k]; d.send_to = id; window.gtag('event', nome, d); });
+    meta('trackCustom', nome, dados);
+  }
+
+  (function () {   // índice do dia da fábrica de fotos (se falhar, fica o embutido)
+    if (!window.fetch || !CONFIG.fotos_grupo) return;
+    window.fetch(CONFIG.fotos_grupo + 'indice.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j && Array.isArray(j.viagens) && j.viagens.length) FOTOS = j; })['catch'](function () {});
+  })();
+  var estado = { feitas: [], pessoas: '', fotoMostrada: '', meses: [], viajados: {}, nome: '', primeiro: '', tel: '', resposta: null, sugestoes: [], destinoLista: '', escolha: null, via: '' };
+
+  /* ---------- envio ao n8n ---------- */
+  function corpo(evento, extra) {
+    var p = {
+      evento: evento, funil: 'prata-da-casa', funil_versao: 'v16', sessao_id: sessaoId,
+      nome: estado.nome, telefone: '55' + estado.tel, destino_anuncio: destinoAnuncio,
+      pagina: location.href.split('#')[0], enviado_em: new Date().toISOString()
+    };
+    for (var k in campos) p[k] = campos[k];
+    for (k in extra || {}) p[k] = extra[k];
+    return p;
+  }
+  // eventos (escolha, whatsapp): só se houver endpoint_eventos; texto puro, sem esperar resposta
+  function postar(payload) {
+    if (CONFIG.modo_teste || !CONFIG.endpoint_eventos) {
+      log((CONFIG.modo_teste ? '(modo teste) ' : '(sem endpoint de eventos) ') + 'POST ' + payload.evento, payload);
+      return;
+    }
+    try {
+      window.fetch(CONFIG.endpoint_eventos, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(payload), keepalive: true })['catch'](function () {});
+    } catch (e) {}
+  }
+
+  /* resposta falsa do modo teste (mesmo formato da consulta real):
+     ?caso=achou (padrão) | so_vai_viajar | nome_diferente | nao_achou */
+  function respostaFalsa() {
+    var caso = Q.caso || 'achou', bate = caso === 'achou' || caso === 'so_vai_viajar' || caso === 'ja_fez_china';
+    var sug = destinoAnuncio ? [destinoAnuncio].concat(VIZINHOS[destinoAnuncio] || []) : ['grecia', 'balcas', 'suica'];
+    return {
+      ok: true, achou: caso !== 'nao_achou', nome_bateu: caso === 'achou', primeiro_nome: caso === 'nao_achou' ? primeiroDigitado() : 'Adalberto',   // achou: vem o nome do SISTEMA (teste: Adalberto)
+      viajou: caso === 'ja_fez_china' ? [{ chave: 'china', nome: 'China', data: '2025-03-22', roteiro: 'China Exuberante - 22/03/2025' }] : (caso === 'achou' || caso === 'nome_diferente') ? [{ chave: 'turquia', nome: 'Turquia', data: '2025-06-05', roteiro: 'Turquia com Capadócia e Ilha Grega Chios - 05/06/2025' }, { chave: 'portugal', nome: 'Espanha, França e Portugal', data: '2014-10' }] : [],
+      vai_viajar: caso === 'so_vai_viajar' ? [{ chave: 'tailandia', nome: 'Tailândia' }] : [],
+      destino_anuncio: destinoAnuncio ? { chave: destinoAnuncio, nome: artigo(destinoAnuncio) } : null,
+      sugestoes: sug, fonte: 'teste'
+    };
+  }
+
+  // consulta da tela 2 (C-3PO): POST JSON {nome, telefone (11 dígitos), destino, utm}; até 8 s
+  function buscar() {
+    var pedido = { nome: estado.nome, telefone: estado.tel, destino: destinoAnuncio, utm: campos, sessao_id: sessaoId, funil_versao: 'v16' };
+    if (CONFIG.modo_teste || !CONFIG.endpoint || !window.fetch) {
+      log('(modo teste) consulta', pedido);
+      return new Promise(function (ok) { setTimeout(function () { ok(CONFIG.modo_teste ? respostaFalsa() : null); }, 1200); });
+    }
+    var prom = window.fetch(CONFIG.endpoint, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(pedido) })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) { log('consulta respondeu', j); return j; });
+    return Promise.race([
+      prom['catch'](function (e) { log('consulta falhou', e); return null; }),
+      new Promise(function (ok) { setTimeout(function () { log('consulta: sem resposta em ' + CONFIG.espera_max + ' ms'); ok(null); }, CONFIG.espera_max); })
+    ]);
+  }
+
+  /* ---------- quais roteiros mostrar ---------- */
+  function proxima(destino, exceto) {
+    var l = POR_DESTINO[destino] || [];
+    for (var i = 0; i < l.length; i++) if (!exceto || exceto(l[i])) return l[i];
+    return null;
+  }
+  // Bruno 18/11: as datas seguem a época das viagens que ela já comprou (agosto -> agosto ou perto).
+  // Só o roteiro do anúncio fica exatamente como no anúncio.
+  function distMes(s) {
+    if (!estado.meses.length) return 0;
+    var m = +s.data.slice(5, 7);
+    return Math.min.apply(null, estado.meses.map(function (x) { var d = Math.abs(m - x); return Math.min(d, 12 - d); }));
+  }
+  function pertoDoMes(lista) {
+    var best = null;
+    (lista || []).forEach(function (s) { if (!best || distMes(s) < distMes(best)) best = s; });   // empate = a mais cedo (lista em ordem de data)
+    return best;
+  }
+  function doAnuncio() {
+    if (Q.saida && SAIDA[Q.saida] && SAIDA[Q.saida].destino === destinoAnuncio) return SAIDA[Q.saida];   // ?saida=slug: a saída exata do anúncio
+    return proxima(destinoAnuncio);
+  }
+  // anúncio + 2 parecidos (lista do C-3PO no índice do dia); completa com o mesmo destino e depois com os mais procurados
+  function sugestoesPadrao(destino) {
+    var out = [], usados = {};
+    function poe(s) { if (s && out.length < 3 && !usados[s.roteiro]) { usados[s.roteiro] = 1; out.push(s); } }
+    var base = destino ? doAnuncio() : null;
+    poe(base);
+    (VIZINHOS[destino] || []).forEach(function (d) { poe(pertoDoMes(POR_DESTINO[d])); });
+    ['italia', 'turquia', 'europa-do-leste', 'grecia', 'portugal'].forEach(function (d) { if (d !== destino) poe(pertoDoMes(POR_DESTINO[d])); });
+    return out;
+  }
+  // valida a resposta da consulta: nada de fora entra sem conferir
+  function lugares(l) {
+    // C-3PO 18/11: nome = países da viagem como no sistema, sem artigo ("Espanha, França e Portugal"); vazio = nome da chave
+    var vistos = {};
+    return (Array.isArray(l) ? l : []).map(function (v) {
+      if (!v) return null;
+      var n = typeof v.nome === 'string' ? v.nome.trim() : '';
+      if (!n && NOME_DESTINO[v.chave]) n = NOME_DESTINO[v.chave];
+      return n ? { chave: String(v.chave || ''), nome: n.slice(0, 60), data: String(v.data || '') } : null;
+    }).filter(function (v) { if (!v || vistos[v.nome]) return false; vistos[v.nome] = 1; return true; }).slice(0, 3);   // as 3 mais recentes
+  }
+  function limpaResposta(r) {
+    if (!r || typeof r !== 'object') return null;
+    var bate = r.achou === true;   // Bruno 18/11: a busca é só pelo celular; achou = mostra as viagens (o nome digitado não importa)
+    var da = r.destino_anuncio && typeof r.destino_anuncio.nome === 'string' && POR_DESTINO[r.destino_anuncio.chave] ? r.destino_anuncio : null;
+    return {
+      achou: r.achou === true, nome_bateu: r.nome_bateu === true,
+      primeiro_nome: typeof r.primeiro_nome === 'string' ? r.primeiro_nome.trim().split(' ')[0].slice(0, 30) : '',
+      viajou: bate ? lugares(r.viajou) : [], vai_viajar: bate ? lugares(r.vai_viajar) : [],
+      destino_anuncio: da,
+      meses: bate ? [].concat(r.viajou || [], r.vai_viajar || []).map(function (v) { return v && /^\d{4}-(\d{2})/.exec(String(v.data || '')); })
+        .filter(Boolean).map(function (m) { return +m[1]; }).filter(function (m) { return m >= 1 && m <= 12; }) : [],
+      chaves: bate ? [].concat(r.viajou || []).map(function (v) { return v && v.chave; }).filter(Boolean) : [],
+      recente: bate && Array.isArray(r.viajou) && r.viajou[0] ? { chave: String(r.viajou[0].chave || ''), data: String(r.viajou[0].data || ''), nome: String(r.viajou[0].nome || ''), roteiro: String(r.viajou[0].roteiro || '') } : null,
+      total: bate && Array.isArray(r.viajou) ? r.viajou.length : 0,
+      futuras: bate && Array.isArray(r.vai_viajar) ? r.vai_viajar.slice(0, 4).filter(Boolean).map(function (v) { return String(v.roteiro || v.nome || ''); }) : [],
+      cruas: bate && Array.isArray(r.viajou) ? r.viajou.slice(0, 4).filter(Boolean).map(function (v) { return { chave: String(v.chave || ''), data: String(v.data || ''), nome: String(v.nome || ''), roteiro: String(v.roteiro || '') }; }) : [],
+      // 19/11 (C-3PO): nome do SISTEMA para a Clint; vazio quando não achou (aí o n8n usa o digitado)
+      nome_completo: r.achou === true && typeof r.nome_completo === 'string' ? r.nome_completo.trim().slice(0, 80) : '',
+      sugestoes: (Array.isArray(r.sugestoes) ? r.sugestoes : []).filter(function (k) { return typeof k === 'string'; })
+    };
+  }
+  // 1º da lista + os 2 próximos que têm saída à venda (próxima saída de cada destino); completa com a reserva
+  // 19/11 (Bruno via C-3PO): anúncio = 1 link por DESTINO. A página escolhe, DENTRO do destino, os roteiros que mais
+  // combinam com a pessoa: época das viagens dela, sem repetir roteiro que ela já fez ou comprou. Depois completa com parecidos.
+  function jaFez(s) {
+    var w = palavras(s.roteiro);
+    if (!w.length) return false;
+    return estado.feitas.some(function (t) {
+      var tw = palavras(t);
+      var bate = w.filter(function (x) { return tw.indexOf(x) >= 0; }).length;
+      return bate / w.length >= 0.6;   // a maior parte das palavras do roteiro aparece na viagem dela
+    });
+  }
+  function melhoresDoDestino(dest) {
+    var porRot = {};
+    (POR_DESTINO[dest] || []).forEach(function (s) { (porRot[s.roteiro] = porRot[s.roteiro] || []).push(s); });
+    var cands = Object.keys(porRot).map(function (k) { return pertoDoMes(porRot[k]); });   // sem histórico: a mais próxima (lista em ordem de data)
+    cands = cands.filter(function (s) { return !jaFez(s); });                                // já fez ou já comprou: sai
+    cands.sort(function (a, b) { return (distMes(a) - distMes(b)) || (a.data < b.data ? -1 : a.data > b.data ? 1 : 0); });
+    return cands;
+  }
+  function montaSugestoes(r) {
+    var lista = [], usados = {};
+    function poe(s, motivo) { if (s && lista.length < 3 && !usados[s.roteiro] && !jaFez(s)) { usados[s.roteiro] = 1; s.motivo = motivo; lista.push(s); } }
+    if (destinoAnuncio) {
+      if (Q.saida && SAIDA[Q.saida] && SAIDA[Q.saida].destino === destinoAnuncio) poe(SAIDA[Q.saida], 'anuncio');   // ?saida= continua valendo
+      melhoresDoDestino(destinoAnuncio).forEach(function (x) { poe(x, 'destino'); });
+    }
+    if (r) r.sugestoes.forEach(function (k) { if (k !== destinoAnuncio) poe(pertoDoMes(POR_DESTINO[k]), 'parecido'); });
+    (VIZINHOS[destinoAnuncio] || []).forEach(function (d) { poe(pertoDoMes(POR_DESTINO[d]), 'parecido'); });
+    if (!destinoAnuncio && r) r.sugestoes.forEach(function (k) { poe(pertoDoMes(POR_DESTINO[k]), 'parecido'); });
+    sugestoesPadrao(destinoAnuncio).forEach(function (x) { poe(x, x.destino === destinoAnuncio ? 'destino' : 'parecido'); });
+    return lista;
+  }
+  // nome com artigo: "a Itália", "o Japão", "Portugal"
+  var ARTIGO = { japao: 'o', egito: 'o', marrocos: 'o', emirados: 'os', portugal: '' };
+  function artigo(chave) { var a = ARTIGO.hasOwnProperty(chave) ? ARTIGO[chave] : 'a'; return (a ? a + ' ' : '') + NOME_DESTINO[chave]; }
+  // "a Grécia" -> "pela <em>Grécia</em>"; "o Japão" -> "pelo"; "Portugal" -> "por"
+  function porArtigo(nome) {
+    var m = /^(a|o|as|os)\s+(.+)$/.exec(nome), p = { a: 'pela', o: 'pelo', as: 'pelas', os: 'pelos' };
+    return m ? p[m[1]] + ' <em>' + esc(m[2]) + '</em>' : 'por <em>' + esc(nome) + '</em>';
+  }
+  // foto do grupo da viagem mais recente: só se não houver dúvida (data exata, ou 1 grupo só daquele destino naquele mês)
+  function palavras(t) {
+    return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(/[^a-z]+/)
+      .filter(function (w) { return w.length > 3 && ['com', 'para', 'pelas', 'pelos'].indexOf(w) < 0; });
+  }
+  function desempata(lista, roteiro) {
+    var alvo = palavras(roteiro);
+    if (!alvo.length) return null;
+    var notas = lista.map(function (f) { var pw = palavras(f.viagem); return pw.filter(function (w) { return alvo.indexOf(w) >= 0; }).length - pw.filter(function (w) { return alvo.indexOf(w) < 0; }).length * 0.5; });
+    var max = Math.max.apply(null, notas), quem = notas.filter(function (n) { return n === max; }).length;
+    return quem === 1 && max > 0 ? lista[notas.indexOf(max)] : null;
+  }
+  function fotoDaViagem(v) {
+    if (!v || !v.data || !v.chave || !FOTOS) return null;
+    var mes = String(v.data).slice(0, 7), dia = String(v.data).length >= 10 ? String(v.data).slice(0, 10) : '';
+    var l = FOTOS.viagens.filter(function (f) { return f.chave === v.chave && f.mes === mes; });
+    if (dia) {
+      var ex = l.filter(function (f) { return f.data === dia; });
+      if (ex.length === 1) return ex[0];
+      if (ex.length > 1) return desempata(ex, v.roteiro);   // 2 grupos no mesmo dia: decide pelo nome da viagem; na dúvida, sem foto
+      // 19/11: pasta do acervo só com mês (ex.: "2025_05 - Portugal Espanha..."): só vale se o nome da viagem bater
+      var soMes = l.filter(function (f) { return String(f.data).length === 7; });
+      return soMes.length ? desempata(soMes, v.roteiro) : null;   // pasta com OUTRO dia = outro grupo: nunca usa
+    }
+    return l.length === 1 ? l[0] : desempata(l, v.roteiro);
+  }
+  // a mais recente que tiver foto de grupo (até 4 viagens)
+  function fotoDasViagens(lista) {
+    for (var i = 0; i < (lista || []).length; i++) { var f = fotoDaViagem(lista[i]); if (f) return { foto: f, viagem: lista[i] }; }
+    return null;
+  }
+  function primeiroDigitado() { return capitaliza(estado.nome.split(' ')[0]); }
+
+  /* ---------- cartões ---------- */
+  function precoHTML(s) {
+    if (!CONFIG.mostrar_preco) return '';
+    var p = s.preco.completo || s.preco.terrestre;
+    if (!p) return '';
+    return '<span class="pc-preco">' + (s.preco.completo ? 'Com aéreo' : 'Terrestre') + ': entrada de <b>' + brl(p.entrada) + '</b> + 12× de <b>' + brl(p.parcela) + '</b></span>';
+  }
+  function paisesHTML(s) {
+    var p = s.paises || '';
+    if (!p || p === s.roteiro || s.roteiro.indexOf(',') >= 0 || !/,| e /.test(p)) return '';
+    return '<span class="pc-paises">' + esc(p) + '</span>';
+  }
+  function corpoHTML(s, tag) {
+    var T = tag || 'span';
+    return '<' + T + ' class="pc-card-t">' + esc(s.roteiro) + '</' + T + '>' + paisesHTML(s) +
+      '<span class="pc-meta"><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-cal"/></svg>Saída em ' + esc(s.data_txt) + '</span>' +
+      '<span class="pc-meta"><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-relogio"/></svg>' + s.dias + ' dias de viagem</span>' + precoHTML(s);
+  }
+  function fotoHTML(s, letra, selo) {
+    return '<span class="pc-card-foto">' + (letra ? '<span class="pc-letra" aria-hidden="true">' + letra + '</span>' : '') +
+      (selo ? '<span class="pc-selo">' + esc(selo) + '</span>' : '') +
+      '<img src="' + esc(/^https?:/.test(s.foto) ? s.foto : CONFIG.midia + s.foto) + '" alt="" width="680" height="420" loading="lazy" decoding="async"></span>';
+  }
+  function epocaHTML(s) {
+    return estado.meses.length && distMes(s) <= 1 ? '<span class="pc-epoca"><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-check"/></svg>Mesma época que você costuma viajar</span>' : '';
+  }
+  function cardHTML(s, i, selo, via) {
+    var letra = 'ABCDEF'.charAt(i), outras = (POR_ROTEIRO[s.roteiro] || []).length > 1;
+    return '<article class="pc-card">' + fotoHTML(s, letra, selo) +
+      '<div class="pc-card-corpo"><span class="pc-so-leitor">Opção ' + letra + ': </span>' + corpoHTML(s, 'h3') + epocaHTML(s) +
+      '<span class="pc-mola"></span>' +
+      '<button type="button" class="pc-card-acao" data-slug="' + esc(s.slug) + '" data-via="' + via + '"><span>Quero este roteiro</span><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-seta"/></svg></button>' +
+      (outras ? '<button type="button" class="pc-card-outras" data-outras="' + esc(s.slug) + '"><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-cal"/></svg><span>Quero outra data deste roteiro</span></button>' : '') +
+      '</div></article>';
+  }
+
+  /* ---------- telas e histórico ---------- */
+  var pilha = [];
+  function mostra(id) {
+    $$('.pc-tela').forEach(function (t) {
+      var on = t.getAttribute('data-id') === id;
+      t.hidden = !on;
+      t.classList.toggle('pc-entra', on);
+    });
+    raiz.setAttribute('data-tela', id);
+    try { window.scrollTo({ top: Math.max(0, raiz.getBoundingClientRect().top + window.pageYOffset), behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); }
+    var h = $('.pc-tela[data-id="' + id + '"] .pc-t');
+    if (h && id !== 'boas-vindas') try { h.focus({ preventScroll: true }); } catch (e) {}
+  }
+  function vai(id) {
+    evento('pc_tela', { tela: id });
+    pilha.push(id);
+    try { history.pushState({ pc: pilha.length }, ''); } catch (e) {}
+    mostra(id);
+  }
+  function volta() {
+    if (pilha.length < 2) return;
+    pilha.pop();
+    var id = pilha[pilha.length - 1];
+    if (id === 'espera') { pilha.pop(); id = pilha[pilha.length - 1]; }
+    mostra(id);
+  }
+  window.addEventListener('popstate', function () { if (pilha.length > 1) volta(); });
+  pilha.push('boas-vindas');
+  try { history.replaceState({ pc: 1 }, ''); } catch (e) {}
+
+  /* ---------- tela 1: nome e WhatsApp ---------- */
+  var inNome = $('#pc-nome'), inTel = $('#pc-tel');
+  function digitos(v) { var d = v.replace(/\D/g, ''); if (d.length > 11 && d.indexOf('55') === 0) d = d.slice(2); return d.slice(0, 11); }
+  function mascara(d) {
+    if (d.length <= 2) return d.length ? '(' + d : '';
+    if (d.length <= 7) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+    return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+  }
+  function telOk(d) { return /^[1-9][1-9]9\d{8}$/.test(d); }
+  function nomeOk(v) { return v.trim().replace(/\s+/g, ' ').length >= 2 && /[a-zà-ú]/i.test(v); }
+  function marca(campo, ok, erro) {
+    var c = $('.pc-campo[data-campo="' + campo + '"]');
+    c.classList.toggle('pc-valido', ok);
+    c.classList.toggle('pc-erro', !!erro);
+    $('.pc-msg-erro', c).hidden = !erro;
+  }
+  inTel.addEventListener('input', function () { var d = digitos(inTel.value); inTel.value = mascara(d); marca('tel', telOk(d), false); });
+  inNome.addEventListener('input', function () { marca('nome', nomeOk(inNome.value), false); });
+  inNome.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); inTel.focus(); } });
+  $('.pc-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var n = inNome.value.trim().replace(/\s+/g, ' '), d = digitos(inTel.value);
+    var okN = nomeOk(n), okT = telOk(d);
+    marca('nome', okN, !okN); marca('tel', okT, !okT);
+    if (!okN) { inNome.focus(); return; }
+    if (!okT) { inTel.focus(); return; }
+    estado.nome = capitaliza(n); estado.tel = d;
+    comecaBusca();
+  });
+
+  /* ---------- voltar de onde parou (só neste aparelho, 7 dias) ---------- */
+  var CHAVE_SALVO = 'pc_prata_salvo_v1', restaurando = false;
+  function salva(extra) {
+    try {
+      var o = JSON.parse(localStorage.getItem(CHAVE_SALVO) || '{}');
+      if (extra === null) { localStorage.removeItem(CHAVE_SALVO); return; }
+      for (var k in extra) o[k] = extra[k];
+      o.t = Date.now();
+      localStorage.setItem(CHAVE_SALVO, JSON.stringify(o));
+    } catch (e) {}
+  }
+  function lido() {
+    try {
+      var o = JSON.parse(localStorage.getItem(CHAVE_SALVO) || 'null');
+      return o && o.tel && o.t && Date.now() - o.t < 7 * 864e5 ? o : null;
+    } catch (e) { return null; }
+  }
+  function avisoVolta(id) {
+    var q = $('.pc-tela[data-id="' + id + '"] .pc-q'), v = $('.pc-volta', q);
+    if (!v) {
+      v = document.createElement('div');
+      v.className = 'pc-volta';
+      v.innerHTML = '<span>Que bom te ver de novo! Continuamos de onde você parou.</span><button type="button" data-acao="recomecar">Não é você? Começar de novo</button>';
+      q.insertBefore(v, q.firstChild);
+    }
+  }
+
+  /* ---------- tela 2: espera ---------- */
+  function comecaBusca() {
+    evento('pc_lead', { destino_anuncio: destinoAnuncio });
+    meta('track', 'Lead', { content_name: 'Prata da Casa', content_category: destinoAnuncio || 'sem destino' }, { eventID: sessaoId });
+    var passos = $$('.pc-passos li');
+    passos.forEach(function (li) { li.classList.remove('pc-feito'); });
+    estado.primeiro = estado.primeiroSalvo || primeiroDigitado();
+    $$('[data-nome]').forEach(function (el) { el.textContent = estado.primeiro; });
+    vai('espera');
+    var t0 = Date.now();
+    var relogios = [700, 1500].map(function (ms, i) { return setTimeout(function () { passos[i].classList.add('pc-feito'); }, ms); });
+    buscar().then(function (r) {
+      var falta = Math.max(0, CONFIG.espera_min - (Date.now() - t0));
+      setTimeout(function () {
+        relogios.forEach(clearTimeout);
+        passos.forEach(function (li) { li.classList.add('pc-feito'); });
+        var lr = limpaResposta(r), nome = (lr && lr.primeiro_nome) || estado.primeiro, h = $('#pc-h2');
+        h.textContent = lr && lr.total ? 'Pronto, ' + nome + '! Encontramos ' + (lr.total === 1 ? 'a sua viagem' : lr.total + ' viagens suas') + ' com a Lielu.'
+          : 'Pronto, ' + nome + '! Separamos roteiros para você.';
+        $('.pc-tela--espera .pc-ap').textContent = 'Já vamos mostrar roteiros pensados para você.';
+        setTimeout(function () { mostraSugestoes(lr); }, 1500);
+      }, falta);
+    });
+  }
+
+  /* ---------- tela 3: sugestões ---------- */
+  function mostraSugestoes(r) {
+    estado.resposta = r;
+    if (!restaurando) salva({ nome: estado.nome, tel: estado.tel, r: r, destino: destinoAnuncio, escolha: '', via: '', pessoas: '', primeiro: (r && r.primeiro_nome) || '' });
+    estado.meses = r ? r.meses : [];
+    estado.feitas = [];
+    (r && r.cruas ? r.cruas : []).forEach(function (v) { estado.feitas.push(v.roteiro || v.nome); });
+    (r && r.futuras ? r.futuras : []).forEach(function (t) { estado.feitas.push(t); });
+    estado.viajados = {};
+    (r ? r.chaves : []).forEach(function (k) { estado.viajados[k] = 1; });
+    // primeiro nome: o da consulta (já vem pronto); se ela falhar, o digitado
+    if (r && r.primeiro_nome) estado.primeiro = r.primeiro_nome;
+    var nome = esc(estado.primeiro);
+    var viajou = r ? r.viajou : [], vaiViajar = r ? r.vai_viajar : [];
+    var da = r ? r.destino_anuncio : null;
+    if (!da && destinoAnuncio) da = { chave: destinoAnuncio, nome: artigo(destinoAnuncio) };
+    // Bruno 18/11 (UX): título curto + viagens em lista, em vez de uma frase comprida
+    // Bruno 18/11: "Você se interessou pela Itália, que tal ela ser a próxima?"
+    var alvo = '';
+    if (da) {
+      var m = /^(a|o|as|os)\s+(.+)$/.exec(da.nome);
+      var ela = m ? { a: 'ela', o: 'ele', as: 'elas', os: 'eles' }[m[1]] : '';   // sem artigo (Portugal): sem pronome
+      alvo = 'Você se interessou ' + porArtigo(da.nome) + '.<br>Que tal ' + (ela || esc(da.nome)) + ' ser a sua próxima viagem?';
+    }
+    var h, sub = 'Separamos estes roteiros para você:';
+    if (viajou.length) {
+      h = alvo || 'Qual vai ser a sua próxima viagem?';
+      sub = 'Com base nas suas viagens, separamos estes roteiros:';
+    } else if (alvo) h = alvo;
+    else if (vaiViajar.length) h = 'Já pensando na próxima viagem?';
+    else h = 'Que bom ter você de volta!';
+    var temHist = !!(viajou.length || vaiViajar.length);
+    $('[data-ola]').textContent = 'Olá, ' + estado.primeiro + '!';
+    $('#pc-h3').innerHTML = h;
+    var quando = function (d) { var mm = +String(d).slice(5, 7), ano = String(d).slice(0, 4); return mm >= 1 && mm <= 12 ? MESES[mm - 1] + ' de ' + ano : ''; };
+    var item = function (v, ic) {
+      return '<li><svg class="pc-ic" aria-hidden="true"><use href="#pc-i-' + ic + '"/></svg><span><b>' + esc(v.nome) + '</b>' + (quando(v.data) ? '<small>' + quando(v.data) + '</small>' : '') + '</span></li>';
+    };
+    var hist = $('[data-hist]');
+    if (temHist) {
+      $('[data-hist-t]').textContent = viajou.length ? 'Suas viagens com a Lielu' : 'Sua próxima viagem com a Lielu';
+      $('[data-hist] .pc-historico').innerHTML = viajou.length ? viajou.map(function (v) { return item(v, 'check'); }).join('') : vaiViajar.map(function (v) { return item(v, 'aviao'); }).join('');
+      hist.hidden = false;
+    } else hist.hidden = true;
+    var achada = r ? fotoDasViagens(r.cruas && r.cruas.length ? r.cruas : [r.recente]) : null, box = $('[data-lembra]');
+    estado.nomeCompleto = (r && r.nome_completo) || '';
+    if (achada) {
+      var ft = achada.foto, mm = +ft.mes.slice(5, 7), ano = ft.mes.slice(0, 4);
+      box.innerHTML = '<img src="' + esc(CONFIG.fotos_grupo + 'fotos/' + ft.foto) + '" alt="Foto do grupo da sua viagem" width="960" height="640" decoding="async">' +
+        '<figcaption>Lembra dessa viagem?<small>' + esc(achada.viagem.nome || NOME_DESTINO[ft.chave] || '') + ' · ' + MESES[mm - 1] + ' de ' + ano + '</small></figcaption>';
+      box.hidden = false;
+      estado.fotoMostrada = ft.foto;
+    } else { box.hidden = true; box.innerHTML = ''; estado.fotoMostrada = ''; }
+
+    // Bruno 18/11: cada cartão diz POR QUE está ali; a lista tem um título claro
+    var ref = da && NOME_DESTINO[da.chave] ? artigo(da.chave) : (viajou[0] ? (NOME_DESTINO[viajou[0].chave] ? artigo(viajou[0].chave) : viajou[0].nome) : '');
+    estado.sugestoes = montaSugestoes(r);
+    var temAnuncio = !!(destinoAnuncio && estado.sugestoes[0] && estado.sugestoes[0].destino === destinoAnuncio);
+    var temPerfil = !!(r && r.achou);
+    // Bruno 18/11: volta o subtítulo da v8 (o título grande é o de cima); os selos dos cartões ficam
+    $('[data-sub]').textContent = viajou.length ? 'Com base nas suas viagens, separamos estes roteiros:' : 'Separamos estes roteiros para você:';
+    $('[data-lista="sugestoes"]').innerHTML = estado.sugestoes.map(function (s, i) {
+      // selo = o motivo do cartão (a época aparece no selo amarelo dentro do cartão)
+      var selo = s.motivo === 'anuncio' ? 'Você viu no anúncio'
+        : s.motivo === 'destino' ? (temPerfil ? 'Roteiro novo para você' : 'Próxima saída')
+        : (ref ? 'Parecido com ' + ref : '');
+      return cardHTML(s, i, selo, s.motivo === 'parecido' ? 'parecido' : 'destino_anuncio');
+    }).join('');
+    $('[data-acao="outro"] .pc-letra').textContent = 'ABCD'.charAt(estado.sugestoes.length);
+    log('tela 3', { historico: temHist, resposta: r, sugestoes: estado.sugestoes.map(function (s) { return s.slug; }) });
+    vai('sugestoes');
+  }
+
+  /* ---------- tela 3b/3c: tenho um destino em mente ---------- */
+  function mostraDestinos() {
+    $('[data-lista="destinos"]').innerHTML = DADOS.destinos.map(function (d) {
+      var n = POR_DESTINO[d.chave].length;
+      var fl = (BANDEIRAS[d.chave] || []).map(function (c) {
+        return '<img src="https://flagcdn.com/w80/' + c + '.png" srcset="https://flagcdn.com/w160/' + c + '.png 2x" width="40" height="40" alt="" loading="lazy" decoding="async">';
+      }).join('');
+      return '<button type="button" class="pc-dest" data-dest="' + esc(d.chave) + '"><span class="pc-bandeiras" aria-hidden="true">' + fl + '</span>' +
+        '<span class="pc-dest-nome">' + esc(d.nome) + '</span><small>' + n + (n === 1 ? ' data' : ' datas') + ' de saída</small>' +
+        (estado.viajados[d.chave] ? '<em class="pc-ja-foi">Você já foi</em>' : '') + '</button>';
+    }).join('');
+    $('#pc-h4').textContent = estado.primeiro + ', tem um destino em mente?';
+    vai('destinos');
+  }
+  function mostraSaidas(dest) {
+    estado.destinoLista = dest;
+    $('[data-dest-nome]').textContent = NOME_DESTINO[dest];
+    $('#pc-h5').textContent = estado.primeiro + ', escolha a sua saída';
+    // um cartão por roteiro (a data mais perto da época dela); as outras datas ficam no botão "Quero outra data"
+    var vistos = {}, l = [];
+    (POR_DESTINO[dest] || []).forEach(function (s) { if (!vistos[s.roteiro]) { vistos[s.roteiro] = 1; l.push(pertoDoMes(POR_ROTEIRO[s.roteiro].filter(function (x) { return x.destino === dest; }))); } });
+    $('[data-lista="saidas"]').innerHTML = l.slice(0, 6).map(function (s, i) { return cardHTML(s, i, '', 'destino_em_mente'); }).join('');
+    vai('saidas');
+  }
+  // outras datas do mesmo roteiro (lista simples, a da mesma época marcada)
+  function mostraDatas(slug) {
+    var base = SAIDA[slug], l = POR_ROTEIRO[base.roteiro] || [];
+    $('[data-datas-roteiro]').textContent = base.roteiro;
+    $('#pc-h7').textContent = estado.primeiro + ', escolha a data que fica melhor para você';
+    $('[data-datas-foto]').innerHTML = fotoHTML(base);
+    $('[data-lista="datas"]').innerHTML = l.map(function (s) {
+      var d = new Date(s.data + 'T12:00:00'), dia = d.getDate(), mes = MESES[d.getMonth()];
+      return '<button type="button" class="pc-data" data-slug="' + esc(s.slug) + '" data-via="outra_data">' +
+        '<span class="pc-data-dia"><b>' + dia + '</b>' + esc(mes.slice(0, 3)) + '</span>' +
+        '<span class="pc-data-txt"><b>' + esc(s.data_txt) + '</b><small>' + s.dias + ' dias de viagem</small>' + epocaHTML(s) + '</span>' +
+        '<svg class="pc-ic" aria-hidden="true"><use href="#pc-i-seta"/></svg></button>';
+    }).join('');
+    vai('datas');
+  }
+
+  /* ---------- tela 4: roteiro escolhido + WhatsApp ---------- */
+  function mensagem(s) {
+    // começo fixo pedido pelo C-3PO: o robô da Clint reconhece "vim pela página Prata da Casa".
+    // Sem "o"/"a" antes do nome: a página não sabe o gênero da pessoa.
+    var quem = { '1': 'Vou sozinho(a).', '2': 'Vamos em 2 pessoas.', '3': 'Vamos em 3 pessoas ou mais.' }[estado.pessoas] || '';
+    return 'Olá! Sou ' + estado.primeiro + ', vim pela página Prata da Casa e quero receber o roteiro de ' + NOME_DESTINO[s.destino] + '.\n' +
+      'Escolhi: ' + s.roteiro + ', saída em ' + s.data_txt + '.' + (quem ? '\n' + quem : '');
+  }
+  function mostraFinal(s, via) {
+    estado.escolha = s; estado.via = via;
+    $$('[data-pessoas]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-pessoas') === estado.pessoas ? 'true' : 'false'); });
+    $('#pc-h6').textContent = 'Pronto, ' + estado.primeiro + '!';
+    $('[data-escolhido]').innerHTML = fotoHTML(s) + '<div class="pc-card-corpo">' + corpoHTML(s, 'h3') + '</div>';
+    $('[data-wa]').setAttribute('href', 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(mensagem(s)));
+    var ligar = $('[data-acao="ligar"]');
+    if (ligar) ligar.hidden = !(CONFIG.modo_teste || (CONFIG.endpoint_ligacao && CONFIG.ligacao_no_ar));
+    if (restaurando) { vai('final'); return; }
+    salva({ escolha: s.slug, via: via });
+    evento('pc_escolha', { roteiro: s.roteiro, saida: s.data_txt, via: via });
+    postar(corpo('escolha', { roteiro: s.roteiro, saida: s.data_txt, saida_slug: s.slug, link_roteiro: s.link, destino_escolhido: s.destino, via: via, historico_mostrado: !!(estado.resposta && estado.resposta.achou && estado.resposta.nome_bateu) }));
+    vai('final');
+  }
+
+  /* ---------- pedido de ligação (Bruno 18/11): a Clint manda um modelo pedindo permissão e depois liga ---------- */
+  function foneLielu() { var d = CONFIG.whatsapp.replace(/^55/, ''); return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7); }
+  function pedirLigacao() {
+    var s = estado.escolha;
+    $('#pc-h8').textContent = 'Ótimo, ' + estado.primeiro + '!';
+    $('[data-lig-final]').textContent = estado.tel.slice(-4);
+    $('[data-lig-lielu]').textContent = foneLielu();
+    $('[data-lig-roteiro]').textContent = s ? s.roteiro : 'a sua próxima viagem';
+    $('[data-wa2]').setAttribute('href', $('[data-wa]').getAttribute('href'));
+    var p = corpo('ligacao', { nome_completo: estado.nomeCompleto || '', primeiro_nome: estado.primeiro, roteiro: s && s.roteiro, saida: s && s.data_txt, saida_slug: s && s.slug,
+      destino_escolhido: s && s.destino, pessoas: estado.pessoas || '' });
+    evento('pc_ligacao', { roteiro: s && s.roteiro });
+    meta('track', 'Contact', { content_name: 'ligacao' }, { eventID: sessaoId + '-lig' });
+    if (CONFIG.modo_teste || !CONFIG.endpoint_ligacao) log('(modo teste) POST ligacao', p);
+    else try {
+      window.fetch(CONFIG.endpoint_ligacao, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), keepalive: true })['catch'](function () {});
+    } catch (e) {}
+    salva({ ligacao: Date.now() });
+    vai('ligacao');
+  }
+
+  // C-3PO 18/11: antes de abrir o wa.me, avisa o n8n (sem esperar resposta) para o card já existir quando a mensagem chegar
+  function avisaWhatsapp(de) {
+    var s = estado.escolha;
+    var p = corpo('whatsapp', { nome_completo: estado.nomeCompleto || '', primeiro_nome: estado.primeiro, destino_escolhido: s && s.destino, roteiro: s && s.roteiro, saida: s && s.data_txt,
+      saida_slug: s && s.slug, pessoas: estado.pessoas || '', de: de });
+    if (CONFIG.modo_teste || !CONFIG.endpoint_whatsapp) { log('(modo teste) POST whatsapp', p); return; }
+    try {
+      window.fetch(CONFIG.endpoint_whatsapp, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), keepalive: true })['catch'](function () {});
+    } catch (e) {}
+  }
+
+  /* ---------- cliques ---------- */
+  raiz.addEventListener('click', function (e) {
+    var el = e.target.closest ? e.target.closest('[data-acao],[data-slug],[data-dest],[data-outras],[data-pessoas],[data-wa],[data-wa2]') : null;
+    if (!el) return;
+    if (el.hasAttribute('data-wa2')) { avisaWhatsapp('ligacao'); evento('pc_whatsapp', { roteiro: estado.escolha && estado.escolha.roteiro, de: 'ligacao' }); return; }
+    if (el.hasAttribute('data-wa')) { avisaWhatsapp('final'); evento('pc_whatsapp', { roteiro: estado.escolha && estado.escolha.roteiro, pessoas: estado.pessoas || '' }); meta('track', 'Contact', {}, { eventID: sessaoId + '-wa' }); postar(corpo('whatsapp', { saida_slug: estado.escolha && estado.escolha.slug, pessoas: estado.pessoas || '' })); return; }
+    var a = el.getAttribute('data-acao');
+    if (a === 'voltar') { e.preventDefault(); if (pilha.length > 1) { try { history.back(); } catch (x) { volta(); } } return; }
+    if (a === 'outro') { mostraDestinos(); return; }
+    if (a === 'ligar') { pedirLigacao(); return; }
+    if (a === 'recomecar') { salva(null); location.replace(location.pathname + location.search.replace(/([?&])(caso|auto)=[^&]*/g, '$1')); return; }
+    if (el.hasAttribute('data-dest')) { mostraSaidas(el.getAttribute('data-dest')); return; }
+    if (el.hasAttribute('data-outras')) { mostraDatas(el.getAttribute('data-outras')); return; }
+    if (el.hasAttribute('data-pessoas')) {
+      estado.pessoas = el.getAttribute('data-pessoas');
+      salva({ pessoas: estado.pessoas });
+      $$('[data-pessoas]').forEach(function (b) { b.setAttribute('aria-pressed', b === el ? 'true' : 'false'); });
+      if (estado.escolha) $('[data-wa]').setAttribute('href', 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(mensagem(estado.escolha)));
+      return;
+    }
+    if (el.hasAttribute('data-slug')) { mostraFinal(SAIDA[el.getAttribute('data-slug')], el.getAttribute('data-via')); }
+  });
+
+  /* ---------- aviso e atalhos de teste ---------- */
+  if (CONFIG.modo_teste || !CONFIG.endpoint) {
+    var av = document.createElement('p');
+    av.className = 'pc-aviso-teste';
+    av.textContent = 'Teste: nada é enviado' + (CONFIG.modo_teste ? ' · ' + ({ achou: 'achou', nome_diferente: 'nome não bateu', nao_achou: 'não achou' }[Q.caso || 'achou'] || Q.caso) : '');
+    raiz.appendChild(av);
+  }
+  /* só no modo teste: ?auto=espera|sugestoes|destinos|saidas|final (para prints em arquivo) */
+  if (CONFIG.modo_teste && Q.auto) {
+    raiz.classList.remove('pc-anim');
+    inNome.value = 'Maria Aparecida'; inTel.value = '(11) 98765-4321';
+    estado.nome = 'Maria Aparecida'; estado.tel = '11987654321'; estado.primeiro = 'Maria';
+    if (Q.auto === 'espera') { estado.primeiro = 'Maria'; $$('[data-nome]').forEach(function (el) { el.textContent = 'Maria'; }); $$('.pc-passos li')[0].classList.add('pc-feito'); vai('espera'); }
+    else {
+      mostraSugestoes(limpaResposta(respostaFalsa()));
+      if (Q.auto === 'destinos') mostraDestinos();
+      if (Q.auto === 'saidas') { mostraDestinos(); mostraSaidas(Q.dest || 'japao'); }
+      if (Q.auto === 'final') mostraFinal(estado.sugestoes[0], 'anuncio');
+      if (Q.auto === 'datas') mostraDatas(estado.sugestoes[Q.n ? +Q.n : 0].slug);
+      if (Q.auto === 'ligacao') { mostraFinal(estado.sugestoes[0], 'anuncio'); pedirLigacao(); }
+    }
+  }
+  var salvo = !(CONFIG.modo_teste && Q.auto) && !Q.novo ? lido() : null;
+  if (salvo) {
+    try { history.scrollRestoration = 'manual'; } catch (e) {}
+    estado.nome = salvo.nome || ''; estado.tel = salvo.tel; estado.primeiroSalvo = salvo.primeiro || ''; estado.primeiro = estado.primeiroSalvo || primeiroDigitado();
+    inNome.value = estado.nome; inTel.value = mascara(estado.tel);
+    if ((salvo.destino || '') === destinoAnuncio && salvo.r !== undefined) {
+      restaurando = true;
+      estado.pessoas = salvo.pessoas || '';
+      mostraSugestoes(salvo.r);
+      avisoVolta('sugestoes');
+      if (salvo.escolha && SAIDA[salvo.escolha]) { mostraFinal(SAIDA[salvo.escolha], salvo.via || ''); avisoVolta('final'); }
+      restaurando = false;
+      evento('pc_voltou', { tela: salvo.escolha ? 'final' : 'sugestoes' });
+    } else {
+      comecaBusca();   // anúncio de outro destino: busca de novo sem pedir nome e telefone
+    }
+  }
+  if (CONFIG.modo_teste) window.__pc = { estado: estado, dados: DADOS, destinoAnuncio: destinoAnuncio, mostra: mostra, mensagem: mensagem };
+})();
+
+</script>
